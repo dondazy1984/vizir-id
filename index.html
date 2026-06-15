@@ -1,0 +1,2271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vizir ID — Interior Design Schedules</title>
+<!-- v3: sectioned schedules · product drawer · floorplans · hero renders -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F6F4EF; --panel:#FFFFFF; --ink:#221F1A; --muted:#8A8378; --line:#E7E2D9;
+  --accent:#9A6B4F; --accent-dark:#7C5440; --olive:#5C6B57; --gold:#B98A4E;
+  --green:#3E7A4E; --green-bg:#E9F2EB; --amber:#9A7A2E; --amber-bg:#F6EFDC;
+  --red:#A8473E; --red-bg:#F6E5E3; --gray-bg:#EFECE5;
+  --shadow:0 1px 3px rgba(34,31,26,.06),0 8px 24px rgba(34,31,26,.07);
+  --radius:10px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.5}
+h1,h2,h3,.serif{font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;letter-spacing:.01em}
+button{font-family:inherit;cursor:pointer;border:none;background:none;font-size:13px}
+input,select,textarea{font-family:inherit;font-size:13px;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:7px;padding:8px 10px;outline:none;width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+.hidden{display:none!important}
+
+/* ============ LOGIN ============ */
+#loginScreen{min-height:100vh;display:flex}
+.login-left{flex:1.1;background:linear-gradient(160deg,#2A2620 0%,#4A3D31 55%,#6B5440 100%);color:#F3EEE6;display:flex;flex-direction:column;justify-content:space-between;padding:56px}
+.login-left .brand{font-family:'Cormorant Garamond',serif;font-size:30px;letter-spacing:.06em}
+.login-left .brand span{color:#D8B98C}
+.login-hero h1{font-size:54px;line-height:1.08;font-weight:500;max-width:480px}
+.login-hero p{margin-top:18px;max-width:420px;color:#CFC5B6;font-size:15px}
+.login-feats{display:flex;gap:28px;font-size:12.5px;color:#BFB4A3}
+.login-feats div::before{content:"—";color:#D8B98C;margin-right:8px}
+.login-right{width:460px;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:40px}
+.login-card{width:100%;max-width:340px}
+.login-card h2{font-size:30px;margin-bottom:6px}
+.login-card .sub{color:var(--muted);margin-bottom:26px;font-size:13px}
+.login-card label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin:14px 0 5px;text-transform:uppercase;letter-spacing:.07em}
+.btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--ink);color:#F5F1E9;padding:11px 20px;border-radius:8px;font-weight:600;font-size:13.5px;width:100%;margin-top:22px;transition:background .15s}
+.btn-primary:hover{background:#000}
+.login-demo{margin-top:26px;border-top:1px solid var(--line);padding-top:18px;font-size:12.5px;color:var(--muted)}
+.login-demo b{color:var(--ink)}
+.demo-chip{display:block;text-align:left;width:100%;background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-top:8px;transition:border-color .15s}
+.demo-chip:hover{border-color:var(--accent)}
+.demo-chip .role{font-weight:600;font-size:12.5px}
+.demo-chip .cred{color:var(--muted);font-size:11.5px}
+#loginError{color:var(--red);font-size:12.5px;margin-top:10px;display:none}
+
+/* ============ APP SHELL ============ */
+#app{display:flex;min-height:100vh}
+.sidebar{width:228px;background:#27241F;color:#CFC8BB;display:flex;flex-direction:column;position:fixed;top:0;bottom:0;left:0;z-index:20}
+.sidebar .brand{font-family:'Cormorant Garamond',serif;font-size:23px;color:#F3EEE6;padding:24px 22px 20px;letter-spacing:.05em}
+.sidebar .brand span{color:#D8B98C}
+.nav-label{font-size:10.5px;text-transform:uppercase;letter-spacing:.12em;color:#7E776B;padding:14px 22px 6px}
+.nav-item{display:flex;align-items:center;gap:11px;padding:10px 22px;color:#BFB8AB;font-size:13.5px;width:100%;text-align:left;border-left:3px solid transparent;transition:all .12s}
+.nav-item:hover{color:#F3EEE6;background:rgba(255,255,255,.04)}
+.nav-item.active{color:#F3EEE6;background:rgba(216,185,140,.1);border-left-color:#D8B98C}
+.nav-item svg{width:16px;height:16px;flex-shrink:0}
+.sidebar-foot{margin-top:auto;padding:18px 22px;border-top:1px solid rgba(255,255,255,.08);font-size:12px}
+.sidebar-foot .who{color:#F3EEE6;font-weight:600}
+.sidebar-foot button{color:#9A937F;font-size:12px;margin-top:6px;text-decoration:underline}
+.seg{display:inline-flex;border:1px solid rgba(127,127,127,.4);border-radius:99px;overflow:hidden;vertical-align:middle}
+.seg .opt{padding:3px 10px;cursor:pointer;font-size:11.5px;font-weight:600;color:inherit;opacity:.65;transition:.12s}
+.seg .opt.on{background:var(--accent);color:#fff;opacity:1}
+.seg .opt:hover{opacity:1}
+.seg-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.main{flex:1;margin-left:228px;padding:30px 38px 80px;max-width:1280px}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:26px}
+.topbar h1{font-size:33px}
+.topbar .crumb{color:var(--muted);font-size:12.5px;margin-bottom:2px}
+.btn-accent{background:var(--accent);color:#fff;padding:9px 16px;border-radius:8px;font-weight:600;font-size:13px;transition:background .15s}
+.btn-accent:hover{background:var(--accent-dark)}
+.btn-ghost{border:1px solid var(--line);background:#fff;padding:8px 14px;border-radius:8px;font-weight:500;color:var(--ink)}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn-sm{padding:5px 10px;font-size:12px;border-radius:6px}
+
+/* cards & stats */
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:30px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow)}
+.stat .num{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:600;line-height:1.1}
+.stat .lbl{color:var(--muted);font-size:12px;margin-top:2px}
+.stat .delta{font-size:11.5px;color:var(--green);margin-top:6px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.card-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--line)}
+.card-head h3{font-size:19px}
+.proj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:18px}
+.proj-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);cursor:pointer;transition:transform .15s,box-shadow .15s}
+.proj-card:hover{transform:translateY(-2px);box-shadow:0 4px 8px rgba(34,31,26,.08),0 16px 36px rgba(34,31,26,.1)}
+.proj-cover{height:120px;display:flex;align-items:flex-end;padding:14px;color:#fff;font-family:'Cormorant Garamond',serif;font-size:22px;text-shadow:0 1px 8px rgba(0,0,0,.35)}
+.proj-body{padding:14px 16px}
+.proj-meta{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin-bottom:10px}
+.proj-bar{height:4px;background:var(--gray-bg);border-radius:2px;overflow:hidden}
+.proj-bar i{display:block;height:100%;background:var(--olive)}
+.proj-foot{display:flex;justify-content:space-between;margin-top:9px;font-size:12px;color:var(--muted)}
+
+/* tags & status */
+.tag{display:inline-block;padding:3px 9px;border-radius:99px;font-size:11px;font-weight:600;letter-spacing:.02em}
+.tag.draft{background:var(--gray-bg);color:#6B6557}
+.tag.sent{background:var(--amber-bg);color:var(--amber)}
+.tag.approved{background:var(--green-bg);color:var(--green)}
+.tag.declined{background:var(--red-bg);color:var(--red)}
+.tag.type{background:#EFE7DC;color:var(--accent-dark)}
+
+/* schedule table */
+.room-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 18px}
+.room-tab{padding:8px 16px;border-radius:99px;border:1px solid var(--line);background:#fff;font-size:13px;font-weight:500;color:var(--muted)}
+.room-tab.active{background:var(--ink);color:#F5F1E9;border-color:var(--ink)}
+.room-tab .cnt{opacity:.6;margin-left:5px;font-size:11.5px}
+table.sched{width:100%;border-collapse:collapse;font-size:13px}
+table.sched th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600;padding:11px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+table.sched td{padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+table.sched tr:last-child td{border-bottom:none}
+table.sched tr:hover td{background:#FBFAF6}
+.item-cell{display:flex;align-items:center;gap:11px}
+.swatch{width:40px;height:40px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px;border:1px solid var(--line)}
+.item-name{font-weight:600;font-size:13px}
+.item-sub{color:var(--muted);font-size:11.5px}
+.num-cell{font-variant-numeric:tabular-nums;white-space:nowrap}
+.cost-cell{color:var(--muted)}
+.price-cell{font-weight:600}
+.row-actions{display:flex;gap:6px;opacity:0;transition:opacity .1s}
+tr:hover .row-actions{opacity:1}
+.icon-btn{width:26px;height:26px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;color:var(--muted);border:1px solid transparent}
+.icon-btn:hover{border-color:var(--line);color:var(--ink);background:#fff}
+.sched-totals{display:flex;justify-content:flex-end;gap:40px;padding:14px 20px;background:#FBFAF6;border-top:1px solid var(--line);font-size:13px}
+.sched-totals b{font-size:15px}
+.markup-pill{font-size:11px;background:#EFE7DC;color:var(--accent-dark);border-radius:99px;padding:2px 8px;font-weight:600}
+
+/* renders */
+.dropzone{border:2px dashed #CFC8B8;border-radius:var(--radius);background:#FCFBF7;padding:46px;text-align:center;color:var(--muted);transition:border-color .15s,background .15s;cursor:pointer}
+.dropzone.drag{border-color:var(--accent);background:#F6EFE7}
+.dropzone .big{font-family:'Cormorant Garamond',serif;font-size:23px;color:var(--ink);margin-bottom:6px}
+.render-stage{position:relative;border-radius:var(--radius);overflow:hidden;background:#1c1a17;box-shadow:var(--shadow)}
+.render-stage img{display:block;width:100%;max-height:520px;object-fit:contain}
+.bbox{position:absolute;border:2px solid #E8C98F;border-radius:6px;box-shadow:0 0 0 2000px rgba(0,0,0,0);cursor:pointer;transition:background .12s}
+.bbox:hover,.bbox.hl{background:rgba(232,201,143,.18)}
+.bbox .bbox-label{position:absolute;top:-24px;left:-2px;background:#E8C98F;color:#2A2620;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:5px;white-space:nowrap}
+.scanline{position:absolute;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,#E8C98F,transparent);animation:scan 1.4s linear infinite;z-index:5}
+@keyframes scan{0%{top:0}100%{top:100%}}
+.detect-list{display:flex;flex-direction:column;gap:10px}
+.detect-item{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:9px;padding:11px 14px;transition:border-color .12s}
+.detect-item:hover,.detect-item.hl{border-color:var(--gold)}
+.detect-item input[type=checkbox]{width:16px;height:16px;accent-color:var(--accent)}
+.conf{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.conf-bar{width:54px;height:4px;border-radius:2px;background:var(--gray-bg);overflow:hidden}
+.conf-bar i{display:block;height:100%;background:var(--olive)}
+.detect-item .di-name{font-weight:600;font-size:13px}
+.detect-item .di-cat{font-size:11.5px;color:var(--muted)}
+.detect-item input.di-cost{width:90px;padding:5px 8px;font-size:12.5px;text-align:right}
+
+/* clients & pricing */
+.client-row{display:grid;grid-template-columns:2fr 1.5fr .9fr .6fr 1fr auto;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid var(--line)}
+.client-row:last-child{border-bottom:none}
+.avatar{width:36px;height:36px;border-radius:50%;background:var(--olive);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-weight:600;font-size:13px;margin-right:11px}
+.markup-input{display:inline-flex;align-items:center;gap:6px}
+.markup-input input{width:64px;text-align:right;padding:6px 8px}
+.cred-box{font-size:11.5px;background:#FBFAF6;border:1px dashed var(--line);border-radius:7px;padding:7px 10px;color:var(--muted)}
+
+/* modal */
+.modal-back{position:fixed;inset:0;background:rgba(34,31,26,.45);display:flex;align-items:center;justify-content:center;z-index:50;backdrop-filter:blur(2px)}
+.modal{background:var(--panel);border-radius:14px;width:520px;max-width:94vw;max-height:90vh;overflow:auto;box-shadow:0 24px 64px rgba(0,0,0,.25)}
+.modal-head{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;border-bottom:1px solid var(--line)}
+.modal-head h3{font-size:21px}
+.modal-body{padding:20px 22px}
+.modal-body label{display:block;font-size:11.5px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:13px 0 5px}
+.modal-body label:first-child{margin-top:0}
+.form-row{display:flex;gap:12px}.form-row>div{flex:1}
+.modal-foot{display:flex;justify-content:flex-end;gap:10px;padding:16px 22px;border-top:1px solid var(--line)}
+
+/* client portal */
+#clientPortal .cp-head{background:#27241F;color:#F3EEE6;padding:0 0 60px}
+.cp-nav{display:flex;justify-content:space-between;align-items:center;padding:20px 40px;max-width:1080px;margin:0 auto}
+.cp-nav .brand{font-family:'Cormorant Garamond',serif;font-size:22px;letter-spacing:.05em}
+.cp-nav .brand span{color:#D8B98C}
+.cp-hero{max-width:1080px;margin:24px auto 0;padding:0 40px}
+.cp-hero .eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:#D8B98C;margin-bottom:8px}
+.cp-hero h1{font-size:42px;font-weight:500}
+.cp-hero p{color:#BFB4A3;margin-top:8px;max-width:560px}
+.cp-body{max-width:1080px;margin:-34px auto 0;padding:0 40px 80px}
+.cp-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px}
+.cp-room{margin-bottom:26px}
+.cp-floor{margin-bottom:14px}
+.cp-floor-title{font-family:'Cormorant Garamond',serif;font-size:28px;margin:16px 4px 10px;padding-top:14px;border-top:1px solid var(--line)}
+.cp-floor:first-child .cp-floor-title{border-top:none;padding-top:0}
+.cp-room-head{display:flex;justify-content:space-between;align-items:baseline;padding:0 4px 10px}
+.cp-room-head h2{font-size:25px}
+.cp-room-head .rt{color:var(--muted);font-size:13px}
+.cp-item{display:grid;grid-template-columns:56px 1.8fr 1fr .8fr 1.2fr;gap:16px;align-items:center;padding:15px 20px;border-bottom:1px solid var(--line)}
+.cp-item:last-child{border-bottom:none}
+.cp-actions{display:flex;gap:8px;justify-content:flex-end}
+.btn-approve{background:var(--green-bg);color:var(--green);padding:7px 14px;border-radius:7px;font-weight:600;font-size:12.5px}
+.btn-approve:hover{background:#D8E8DC}
+.btn-decline{background:var(--red-bg);color:var(--red);padding:7px 14px;border-radius:7px;font-weight:600;font-size:12.5px}
+.btn-decline:hover{background:#EFD4D1}
+.cp-note{font-size:12px;color:var(--muted);font-style:italic;margin-top:3px}
+.toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--ink);color:#F5F1E9;padding:12px 22px;border-radius:99px;font-size:13px;box-shadow:0 12px 32px rgba(0,0,0,.3);transition:transform .3s;z-index:99}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* view tabs / search / sections */
+.view-tabs{display:flex;gap:18px;align-items:center}
+.view-tab{padding:8px 2px;font-weight:600;color:var(--muted);border-bottom:2px solid transparent;font-size:13.5px}
+.view-tab.active{color:var(--ink);border-bottom-color:var(--ink)}
+.sched-toolbar{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);margin-bottom:16px;gap:14px}
+.sched-search{width:220px;padding:7px 11px;border-radius:99px;margin-bottom:6px}
+.sec-head{display:flex;align-items:baseline;gap:9px;padding:20px 4px 9px}
+.sec-head h3{font-size:20px}
+.sec-head .cnt{color:var(--muted);font-size:12.5px}
+.sec-actions{display:flex;gap:8px;padding:10px 2px 2px;flex-wrap:wrap}
+.sec-actions .btn-ghost{font-size:12.5px;padding:6px 12px}
+.doc-code{font-family:ui-monospace,monospace;font-size:10.5px;color:var(--muted);letter-spacing:.04em}
+.micro{font-size:11px;color:var(--muted);line-height:1.35}
+.micro b{color:var(--ink);font-weight:500}
+
+/* dropdown menu */
+.dd-wrap{position:relative;display:inline-block}
+.dd-menu{position:absolute;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 12px 32px rgba(34,31,26,.14);min-width:200px;z-index:45;padding:6px}
+.dd-menu button{display:block;width:100%;text-align:left;padding:8px 12px;border-radius:6px;font-size:13px}
+.dd-menu button:hover{background:#F6F2E9}
+.dd-menu hr{border:none;border-top:1px solid var(--line);margin:5px 0}
+
+/* item drawer */
+.drawer-back{position:fixed;inset:0;background:rgba(34,31,26,.35);z-index:60;backdrop-filter:blur(1px)}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:480px;max-width:96vw;background:var(--panel);box-shadow:-12px 0 48px rgba(0,0,0,.2);z-index:61;display:flex;flex-direction:column}
+.drawer-head{padding:15px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px}
+.drawer-head h3{font-size:21px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.drawer-tabs{display:flex;gap:16px;padding:0 20px;border-bottom:1px solid var(--line)}
+.drawer-tab{padding:10px 2px;font-weight:600;color:var(--muted);border-bottom:2px solid transparent;font-size:13px}
+.drawer-tab.active{color:var(--ink);border-bottom-color:var(--ink)}
+.drawer-body{flex:1;overflow:auto;padding:18px 20px}
+.drawer-body label{display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:13px 0 5px}
+.drawer-body .sec-title{font-weight:600;font-size:14px;margin:20px 0 2px;padding-top:14px;border-top:1px solid var(--line)}
+.drawer-foot{padding:13px 20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px}
+.img-slots{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.img-slot{aspect-ratio:1;border:1.5px dashed #D6CFC0;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:10.5px;cursor:pointer;overflow:hidden;background:#FBFAF6;text-align:center}
+.img-slot img{width:100%;height:100%;object-fit:cover}
+.spec2{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+.switch{position:relative;width:36px;height:20px;background:#D8D2C6;border-radius:99px;cursor:pointer;transition:.15s;flex-shrink:0;display:inline-block;vertical-align:middle}
+.switch.on{background:var(--green)}
+.switch::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.15s;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.switch.on::after{left:18px}
+.fin-preview{background:#FBFAF6;border:1px solid var(--line);border-radius:9px;padding:12px 14px;margin-top:16px;font-size:13px}
+.fin-preview div{display:flex;justify-content:space-between;padding:3px 0}
+.cspec-row{display:flex;gap:8px;margin-top:6px;align-items:center}
+.status-sel{border-radius:99px;padding:5px 9px;font-size:12px;width:auto;font-weight:600}
+
+/* pinboards */
+.board-sec{margin-bottom:30px}
+.board-sec-title{text-align:center;font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--muted);margin:10px 0 16px;display:flex;align-items:center;gap:14px}
+.board-sec-title::before,.board-sec-title::after{content:"";flex:1;border-top:1px solid var(--line)}
+.board-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px}
+.board-img{position:relative;border-radius:10px;overflow:hidden;background:#fff;border:1px solid var(--line);cursor:pointer;transition:transform .12s}
+.board-img:hover{transform:translateY(-2px)}
+.board-img img{width:100%;display:block;aspect-ratio:1;object-fit:cover}
+.board-img .bi-note{padding:7px 10px;font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.board-add{aspect-ratio:1;border:1.5px dashed #D6CFC0;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--muted);cursor:pointer;font-size:12px;background:#FCFBF7}
+.board-add:hover{border-color:var(--accent);color:var(--accent)}
+
+/* floorplans */
+.plan-strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:16px}
+.plan-card{position:relative;border-radius:10px;overflow:hidden;background:#fff;border:1px solid var(--line);cursor:pointer;transition:transform .12s}
+.plan-card:hover{transform:translateY(-2px)}
+.plan-card img{width:100%;display:block;aspect-ratio:16/10;object-fit:contain;background:#FCFBF7;cursor:zoom-in;min-height:230px}
+.plan-card .bi-note{padding:7px 10px;font-size:11px;color:var(--muted);border-top:1px solid var(--line);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.plan-add{border:1.5px dashed #D6CFC0;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--muted);cursor:pointer;font-size:12px;background:#FCFBF7;aspect-ratio:16/12;gap:4px}
+.plan-add:hover{border-color:var(--accent);color:var(--accent)}
+.zoom-btn{position:absolute;top:8px;right:8px;background:rgba(34,31,26,.78);color:#E8C98F;border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:16px;backdrop-filter:blur(3px);opacity:0;transition:opacity .12s;z-index:3}
+.plan-card:hover .zoom-btn,.hero-card:hover .zoom-btn{opacity:1}
+.lightbox-back{position:fixed;inset:0;background:rgba(20,18,15,.93);z-index:80;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px;cursor:zoom-out}
+.lightbox-img{max-width:95vw;max-height:86vh;object-fit:contain;border-radius:8px;box-shadow:0 24px 70px rgba(0,0,0,.55);background:#FCFBF7}
+.lightbox-cap{color:#E8DFCE;margin-top:14px;font-size:13px;text-align:center;max-width:80vw}
+.lightbox-x{position:fixed;top:18px;right:22px;color:#E8DFCE;font-size:26px;background:none;border:none;cursor:pointer;line-height:1}
+.cp-plans{display:flex;gap:12px;flex-wrap:wrap;margin:0 0 12px}
+.cp-plans .plan-card{width:300px}
+
+/* room hero renders */
+.hero-strip{display:flex;gap:12px;overflow-x:auto;padding-bottom:6px}
+.hero-card{position:relative;flex:0 0 auto;width:360px;border-radius:12px;overflow:hidden;border:1px solid var(--line);cursor:pointer;background:#1c1a17;transition:transform .12s}
+.hero-card:hover{transform:translateY(-2px)}
+.hero-card img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}
+.hero-card .hero-cap{position:absolute;left:0;right:0;bottom:0;padding:22px 12px 9px;background:linear-gradient(transparent,rgba(0,0,0,.68));color:#fff;font-size:11.5px}
+.hero-card .hero-ai{position:absolute;top:9px;right:9px;background:rgba(34,31,26,.78);color:#E8C98F;font-size:11px;font-weight:600;padding:5px 10px;border-radius:99px;backdrop-filter:blur(3px)}
+.hero-card .hero-ai:hover{background:#1F1D1A}
+.hero-add{flex:0 0 auto;width:220px;aspect-ratio:16/9;border:1.5px dashed #D6CFC0;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--muted);cursor:pointer;font-size:12px;background:#FCFBF7;gap:4px}
+.hero-add:hover{border-color:var(--accent);color:var(--accent)}
+.cp-heroes{display:flex;gap:12px;overflow-x:auto;margin:0 0 14px}
+.cp-heroes .hero-card{width:300px;cursor:zoom-in}
+
+.hero-strip.dragover,.plan-strip.dragover,.board-grid.dragover{outline:2px dashed var(--accent);outline-offset:5px;border-radius:12px;background:#F6EFE7}
+.import-dz{border:1.5px dashed #CFC8B8;border-radius:10px;background:#FCFBF7;padding:13px 16px;text-align:center;color:var(--muted);font-size:12.5px;cursor:pointer;margin:8px 0 4px;transition:border-color .15s,background .15s}
+.import-dz:hover{border-color:var(--accent);color:var(--accent)}
+.import-dz.dragover{border-color:var(--accent);background:#F6EFE7;color:var(--accent)}
+.import-dz b{color:var(--ink)}.import-dz:hover b{color:var(--accent)}
+.empty{padding:46px;text-align:center;color:var(--muted)}
+.empty .big{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--ink);margin-bottom:4px}
+.section-gap{margin-bottom:26px}
+.two-col{display:grid;grid-template-columns:1.6fr 1fr;gap:22px;align-items:start}
+
+/* mobile nav toggle */
+.nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:30;width:42px;height:42px;border-radius:10px;background:#27241F;color:#F3EEE6;font-size:20px;box-shadow:var(--shadow);align-items:center;justify-content:center}
+.nav-overlay{display:none;position:fixed;inset:0;background:rgba(34,31,26,.45);z-index:19;backdrop-filter:blur(1px)}
+.nav-overlay.show{display:block}
+
+@media(max-width:980px){.two-col{grid-template-columns:1fr}.stat-row{grid-template-columns:repeat(2,1fr)}.login-left{display:none}.login-right{width:100%}}
+@media(max-width:860px){
+  .sidebar{transform:translateX(-100%);transition:transform .22s ease;width:262px;box-shadow:12px 0 40px rgba(0,0,0,.25)}
+  .sidebar.open{transform:none}
+  .nav-toggle{display:flex}
+  .main{margin-left:0;padding:62px 16px 60px;max-width:100%}
+  .topbar{flex-wrap:wrap;gap:12px}
+  .topbar h1{font-size:27px}
+  .card{overflow-x:auto}
+  table.sched{min-width:680px}
+  .cp-nav{padding:18px 20px}.cp-hero,.cp-body{padding-left:20px;padding-right:20px}
+  .cp-hero h1{font-size:32px}
+  .cp-stats{grid-template-columns:1fr}
+  .cp-item{grid-template-columns:48px 1fr;row-gap:8px}
+  .cp-item .cp-actions{grid-column:1 / -1;justify-content:flex-start}
+  .cp-item .num-cell{grid-column:2;text-align:left}
+  .client-row{grid-template-columns:1fr 1fr;row-gap:10px}
+  .client-row>div:last-child{text-align:left}
+  .drawer{width:100%}
+  .modal{width:96vw}
+  .render-stage img{max-height:340px}
+}
+@media(max-width:520px){.stat-row{grid-template-columns:1fr}.spec2{grid-template-columns:1fr}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<!-- ================= LOGIN ================= -->
+<div id="loginScreen">
+  <div class="login-left">
+    <div class="brand">VIZIR<span>·</span>ID</div>
+    <div class="login-hero">
+      <h1>Every room, scheduled. Every price, under control.</h1>
+      <p>FF&E schedules for villas, buildings and apartments — built from your renders, priced your way, approved by your clients.</p>
+    </div>
+    <div class="login-feats">
+      <div>AI render takeoff</div>
+      <div>Room-by-room schedules</div>
+      <div>Client approvals</div>
+    </div>
+  </div>
+  <div class="login-right">
+    <div class="login-card">
+      <h2>Welcome back</h2>
+      <div class="sub">Sign in to your studio or client space.</div>
+      <div class="seg-row" style="margin-bottom:18px">
+        <span class="seg" data-set="lang"><b class="opt" data-v="en" onclick="setLang('en')">EN</b><b class="opt" data-v="fr" onclick="setLang('fr')">FR</b></span>
+        <span class="seg" data-set="cur"><b class="opt" data-v="EUR" onclick="setCurrency('EUR')">€</b><b class="opt" data-v="XOF" onclick="setCurrency('XOF')">FCFA</b></span>
+      </div>
+      <div id="signupOnly" class="hidden"><label>Studio name</label>
+      <input id="loginStudio" type="text" placeholder="Atelier Doro"></div>
+      <label>Email</label>
+      <input id="loginEmail" type="email" placeholder="you@studio.com" autofocus>
+      <label>Password</label>
+      <input id="loginPass" type="password" placeholder="••••••••">
+      <div id="loginError"></div>
+      <button class="btn-primary" id="authBtn" onclick="doAuth()">Sign in</button>
+      <div class="login-demo">
+        <span id="authToggleTxt">New studio?</span>
+        <button class="demo-chip" style="text-align:center" onclick="toggleAuthMode()"><b id="authToggleBtn">Create a studio account</b></button>
+        <button class="demo-chip" style="text-align:center" onclick="localDemo()"><span class="cred">or try a local demo on this device</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= DESIGNER APP ================= -->
+<div id="app" class="hidden">
+  <button id="navToggle" class="nav-toggle" onclick="toggleSidebar()" aria-label="Open menu">☰</button>
+  <div id="navOverlay" class="nav-overlay" onclick="toggleSidebar(false)"></div>
+  <nav class="sidebar">
+    <div class="brand">VIZIR<span>·</span>ID</div>
+    <div class="nav-label">Studio</div>
+    <button class="nav-item active" data-view="dashboard" onclick="nav('dashboard')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+      Dashboard</button>
+    <button class="nav-item" data-view="projects" onclick="nav('projects')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 10.5 12 4l9 6.5"/><path d="M5 9.5V20h14V9.5"/><path d="M10 20v-5h4v5"/></svg>
+      Projects</button>
+    <button class="nav-item" data-view="renders" onclick="nav('renders')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="14" rx="2"/><circle cx="9" cy="9.5" r="1.6"/><path d="m5 17 5-5 4 4 2.5-2.5L21 17"/><path d="M12 22h0"/></svg>
+      Renders · AI</button>
+    <button class="nav-item" data-view="library" onclick="nav('library')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V5a1 1 0 0 1 1-1h3v16H5a1 1 0 0 1-1-1Z"/><path d="M8 4h4v16H8z"/><path d="m13.5 5 4.6 14.6 3-1L16.4 4z"/></svg>
+      Product Library</button>
+    <button class="nav-item" data-view="boards" onclick="nav('boards')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="8" height="12" rx="1.5"/><rect x="13" y="3" width="8" height="6" rx="1.5"/><rect x="13" y="11" width="8" height="10" rx="1.5"/><rect x="3" y="17" width="8" height="4" rx="1.5"/></svg>
+      Pinboards</button>
+    <div class="nav-label">Business</div>
+    <button class="nav-item" data-view="clients" onclick="nav('clients')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.4"/><path d="M2.8 20c.6-3.6 3.1-5.6 6.2-5.6s5.6 2 6.2 5.6"/><circle cx="17.5" cy="9" r="2.6"/><path d="M16 14.7c2.8.1 4.7 1.9 5.2 5"/></svg>
+      Clients & Pricing</button>
+    <div class="sidebar-foot">
+      <div class="who">Doro Diagne</div>
+      <div style="color:#9A937F">Atelier Doro — Studio plan</div>
+      <button onclick="logout()">Sign out</button>
+      <button onclick="resetDemo()" style="margin-left:12px;color:#9A937F">Reset demo</button>
+      <div class="seg-row" style="margin-top:12px">
+        <span class="seg" data-set="lang"><b class="opt" data-v="en" onclick="setLang('en')">EN</b><b class="opt" data-v="fr" onclick="setLang('fr')">FR</b></span>
+        <span class="seg" data-set="cur"><b class="opt" data-v="EUR" onclick="setCurrency('EUR')">€</b><b class="opt" data-v="XOF" onclick="setCurrency('XOF')">FCFA</b></span>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main">
+    <!-- DASHBOARD -->
+    <section id="view-dashboard" class="view">
+      <div class="topbar">
+        <div><div class="crumb">Studio overview</div><h1>Good day, Doro</h1></div>
+        <button class="btn-accent" onclick="openProjectModal()">+ New project</button>
+      </div>
+      <div class="stat-row" id="dashStats"></div>
+      <div class="card-head" style="border:none;padding:0 0 14px"><h3 class="serif" style="font-size:22px">Active projects</h3></div>
+      <div class="proj-grid" id="dashProjects"></div>
+    </section>
+
+    <!-- PROJECTS LIST -->
+    <section id="view-projects" class="view hidden">
+      <div class="topbar">
+        <div><div class="crumb">All projects</div><h1>Projects</h1></div>
+        <button class="btn-accent" onclick="openProjectModal()">+ New project</button>
+      </div>
+      <div class="proj-grid" id="projGrid"></div>
+    </section>
+
+    <!-- PROJECT DETAIL / SCHEDULES -->
+    <section id="view-project" class="view hidden">
+      <div class="topbar">
+        <div>
+          <div class="crumb"><a href="#" onclick="nav('projects');return false" style="color:var(--muted)">Projects</a> / <span id="pdType"></span></div>
+          <h1 id="pdName"></h1>
+        </div>
+        <div style="display:flex;gap:10px">
+          <div class="dd-wrap">
+            <button class="btn-ghost" onclick="toggleMenu('exportMenu')">⋯ More</button>
+            <div class="dd-menu hidden" id="exportMenu">
+              <button onclick="exportSchedule('pdf')">⎙ Export as PDF</button>
+              <button onclick="exportSchedule('xls')">⊞ Export as XLS (Excel)</button>
+              <button onclick="toast('Get quotes request sent to suppliers (simulated)')">✉ Get quotes</button>
+              <hr>
+              <button onclick="toast('Schedule import (simulated)')">⇪ Import schedule</button>
+              <button onclick="toast('Purchase order created (simulated)')">⎘ Create purchase order</button>
+            </div>
+          </div>
+          <button class="btn-ghost" onclick="openRoomModal()">+ Add room</button>
+          <button class="btn-accent" onclick="openDrawer()">New ⌘N</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:18px;align-items:center;margin-bottom:14px;font-size:12.5px;color:var(--muted)">
+        <span>Client: <b id="pdClient" style="color:var(--ink)"></b></span>
+        <span>Default markup: <span class="markup-pill" id="pdMarkup"></span></span>
+        <span id="pdShare" class="cred-box"></span>
+      </div>
+      <div class="room-tabs" id="roomTabs"></div>
+      <div class="sched-toolbar">
+        <div class="view-tabs">
+          <button class="view-tab active" id="vtSummary" onclick="setSchedView('summary')">Summary</button>
+          <button class="view-tab" id="vtFinancial" onclick="setSchedView('financial')">Financial</button>
+        </div>
+        <input class="sched-search" id="schedSearch" placeholder="🔍 Search items…" oninput="schedSearch=this.value;renderProjectDetail()">
+      </div>
+      <div id="schedSections"></div>
+      <input type="file" id="planFile" accept="image/*,.pdf" multiple class="hidden">
+    </section>
+
+    <!-- RENDERS / AI -->
+    <section id="view-renders" class="view hidden">
+      <div class="topbar">
+        <div><div class="crumb">AI takeoff</div><h1>Renders</h1></div>
+      </div>
+      <div id="renderUploadWrap">
+        <div class="dropzone" id="dropzone" onclick="document.getElementById('renderFile').click()">
+          <div class="big">Drop a render here</div>
+          <div>or click to browse — Vizir reads the image and proposes the furniture, fixtures & finishes for your schedule.</div>
+          <div style="margin-top:14px"><button class="btn-ghost" onclick="event.stopPropagation();useSampleRender()">Try with a sample render</button></div>
+        </div>
+        <input type="file" id="renderFile" accept="image/*" class="hidden">
+      </div>
+      <div id="renderResultWrap" class="hidden">
+        <div class="two-col">
+          <div>
+            <div class="render-stage" id="renderStage"><img id="renderImg" alt="render"></div>
+            <div style="margin-top:12px;display:flex;gap:10px">
+              <button class="btn-ghost" onclick="resetRender()">↺ New render</button>
+              <button class="btn-ghost" id="reanalyzeBtn" onclick="analyzeRender()">⟳ Re-analyze</button>
+            </div>
+          </div>
+          <div>
+            <div class="card-head" style="border:none;padding:0 0 12px">
+              <h3 class="serif" style="font-size:21px" id="detectTitle">Analyzing…</h3>
+            </div>
+            <div style="margin-bottom:12px" id="detectControls" class="hidden">
+              <div class="form-row">
+                <div><label style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">Project</label>
+                <select id="detProject" onchange="fillDetRooms()"></select></div>
+                <div><label style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">Room</label>
+                <select id="detRoom"></select></div>
+              </div>
+            </div>
+            <div class="detect-list" id="detectList"></div>
+            <button class="btn-accent hidden" id="addDetectedBtn" style="width:100%;margin-top:14px" onclick="addDetectedToSchedule()">Add selected to schedule</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LIBRARY -->
+    <section id="view-library" class="view hidden">
+      <div class="topbar">
+        <div><div class="crumb">Reusable products</div><h1>Product Library</h1></div>
+        <button class="btn-accent" onclick="openDrawer(null,'library')">+ Add Product</button>
+      </div>
+      <div class="card"><table class="sched">
+        <thead><tr><th style="width:34%">Product</th><th>Brand · SKU</th><th>Category</th><th>Supplier</th><th style="text-align:right">Trade</th><th style="text-align:right">RRP</th><th>Used in</th></tr></thead>
+        <tbody id="libBody"></tbody>
+      </table></div>
+    </section>
+
+    <!-- PINBOARDS -->
+    <section id="view-boards" class="view hidden">
+      <div class="topbar">
+        <div><div class="crumb">Mood boards & references</div><h1>Pinboards</h1></div>
+        <div style="display:flex;gap:10px">
+          <select id="boardProject" style="width:auto" onchange="renderBoards()"></select>
+          <button class="btn-accent" onclick="addBoardSection()">+ New section</button>
+        </div>
+      </div>
+      <div id="boardWrap"></div>
+      <input type="file" id="boardFile" accept="image/*" multiple class="hidden">
+    </section>
+
+    <!-- CLIENTS & PRICING -->
+    <section id="view-clients" class="view hidden">
+      <div class="topbar">
+        <div><div class="crumb">Backend pricing control</div><h1>Clients & Pricing</h1></div>
+        <button class="btn-accent" onclick="openClientModal()">+ New client</button>
+      </div>
+      <p style="color:var(--muted);margin-bottom:18px;max-width:640px">Set the markup each client receives. Clients only ever see their <b>final price</b> — costs and margins stay in your backend. Per-item overrides are available inside each schedule.</p>
+      <div class="card">
+        <div class="client-row" style="font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600">
+          <div>Client</div><div>Portal credentials</div><div>Default markup</div><div>Projects</div><div style="text-align:right">Portal value</div><div></div>
+        </div>
+        <div id="clientRows"></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- ================= CLIENT PORTAL ================= -->
+<div id="clientPortal" class="hidden">
+  <div class="cp-head">
+    <div class="cp-nav">
+      <div class="brand">VIZIR<span>·</span>ID <span style="font-family:Inter;font-size:11px;letter-spacing:.1em;color:#9A937F;margin-left:8px">CLIENT SPACE</span></div>
+      <div style="display:flex;align-items:center;gap:16px;font-size:13px">
+        <span id="cpWho"></span>
+        <span class="seg" data-set="lang"><b class="opt" data-v="en" onclick="setLang('en')">EN</b><b class="opt" data-v="fr" onclick="setLang('fr')">FR</b></span>
+        <button onclick="logout()" style="color:#D8B98C;text-decoration:underline;font-size:12.5px">Sign out</button>
+      </div>
+    </div>
+    <div class="cp-hero">
+      <div class="eyebrow" id="cpType"></div>
+      <h1 id="cpProject"></h1>
+      <p>Prepared by Atelier Doro. Review each selection and approve directly — your designer is notified instantly.</p>
+    </div>
+  </div>
+  <div class="cp-body">
+    <div class="cp-stats" id="cpStats"></div>
+    <div id="cpRooms"></div>
+  </div>
+</div>
+
+<!-- ================= MODALS ================= -->
+<div class="modal-back hidden" id="modalBack">
+  <div class="modal" id="modalBox"></div>
+</div>
+<div class="drawer-back hidden" id="drawerBack" onclick="closeDrawer()"></div>
+<div class="drawer hidden" id="drawerEl"></div>
+<input type="file" id="drawerImgFile" accept="image/*" class="hidden">
+<input type="file" id="importFile" accept=".xlsx,.xls,.csv" class="hidden">
+<div class="toast" id="toast"></div>
+<div class="lightbox-back hidden" id="lightboxBack" onclick="if(event.target.id==='lightboxBack'||event.target.id==='lightboxImg')closeLightbox()">
+  <button class="lightbox-x" onclick="closeLightbox()" aria-label="Close">✕</button>
+  <img id="lightboxImg" class="lightbox-img" alt="floorplan">
+  <div id="lightboxCap" class="lightbox-cap"></div>
+</div>
+
+<script>
+/* ================= SUPABASE ================= */
+const SUPABASE_URL='https://baufypyqcauiunnirrhl.supabase.co';
+const SUPABASE_KEY='sb_publishable_k9eth--EL8HJAJjHMd4t7A_A5NQQyk2';
+const sb = (window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null);
+let cloudReady=false; let _cloudT=null; let authMode='signin';
+/* ================= DATA ================= */
+const CATS = ['Furniture','Lighting','Fixtures','Finishes','Joinery','Soft Furnishings','Appliances','Sanitaryware'];
+const CAT_EMOJI = {Furniture:'🛋️',Lighting:'💡',Fixtures:'🚿',Finishes:'🎨',Joinery:'🚪','Soft Furnishings':'🧶',Appliances:'🍳',Sanitaryware:'🛁'};
+const CAT_BG = {Furniture:'#EFE7DC',Lighting:'#F6EFDC',Fixtures:'#E3EBF0',Finishes:'#E9F2EB',Joinery:'#EFE3DC',
+ 'Soft Furnishings':'#F0E5EC',Appliances:'#E8E8E8',Sanitaryware:'#E0EDF0'};
+
+let DB = {
+  clients: [
+    {id:'c1', name:'Elena Rossi', email:'elena@client.com', pass:'villa2026', markup:35},
+    {id:'c2', name:'Karim Benali', email:'karim@client.com', pass:'marais2026', markup:28},
+    {id:'c3', name:'Hera Development SARL', email:'pm@heradev.com', pass:'tower2026', markup:18},
+  ],
+  projects: [
+    {id:'p1', name:'Villa Azure', type:'Villa', clientId:'c1', cover:'linear-gradient(135deg,#5C6B57,#2F3B33)', rooms:[
+      {id:'r1', name:'Living Room', items:[
+        {id:'i1', name:'Camaleonda Modular Sofa', cat:'Furniture', section:'Seating', brand:'B&B Italia', sku:'CAM-4M', supplier:'B&B Italia', w:330,d:95,h:70, colour:'Ivory', material:'Bouclé', finish:'As Shown', qty:1, cost:9800, rrp:13900, lead:'10–12 wks', status:'Approved', note:'Bouclé ivory, 4 modules', details:'SEE DRAWINGS FOR LOCATION', url:'https://bebitalia.com/camaleonda'},
+        {id:'i2', name:'Arco Floor Lamp', cat:'Lighting', section:'Lighting', brand:'Flos', sku:'F0300000', supplier:'Flos', h:240, colour:'Steel / Marble', material:'Marble base', qty:1, cost:2450, rrp:3250, lead:'4 wks', status:'Approved', note:''},
+        {id:'i3', name:'Beni Ourain Rug', cat:'Soft Furnishings', section:'Rugs & Textiles', brand:'Atlas Weavers', supplier:'Atlas Weavers', w:400,l:300, colour:'Natural', material:'Wool', qty:1, cost:3200, rrp:4500, lead:'8 wks', status:'Sent', note:'Hand-knotted wool'},
+        {id:'i4', name:'Travertine Coffee Table', cat:'Furniture', section:'Tables', brand:'Studio Marbre', supplier:'Studio Marbre', w:140,d:80,h:33, colour:'Beige', material:'Travertine', finish:'Honed', qty:1, cost:2900, rrp:4100, lead:'6 wks', status:'Sent', note:''},
+        {id:'i5', name:'Limewash Paint — Sand', cat:'Finishes', section:'Wall Finishes', brand:'Bauwerk', supplier:'Bauwerk', dims:'≈ 68 m²', colour:'Sand', qty:1, cost:740, rrp:980, lead:'1 wk', status:'Draft', note:'Walls & ceiling'},
+      ]},
+      {id:'r2', name:'Master Bedroom', items:[
+        {id:'i6', name:'Oak Platform Bed', cat:'Furniture', supplier:'Zeitraum', dims:'180 × 200 cm', qty:1, cost:4100, lead:'9 wks', status:'Sent', note:'Solid oak, oiled'},
+        {id:'i7', name:'IC Pendant Lights', cat:'Lighting', supplier:'Flos', dims:'Ø 30 cm', qty:2, cost:620, lead:'3 wks', status:'Approved', note:'Brushed brass, bedside'},
+        {id:'i8', name:'Linen Curtains', cat:'Soft Furnishings', supplier:'Kvadrat', dims:'2 panels, H 320 cm', qty:2, cost:480, lead:'5 wks', status:'Draft', note:''},
+      ]},
+      {id:'r3', name:'Kitchen', items:[
+        {id:'i9', name:'Brass Mixer Tap', cat:'Fixtures', supplier:'Vola', dims:'KV1 model', qty:1, cost:1150, lead:'4 wks', status:'Sent', note:'Unlacquered brass'},
+        {id:'i10', name:'Bespoke Oak Island', cat:'Joinery', supplier:'Atelier Bois', dims:'280 × 110 × 92 cm', qty:1, cost:8600, lead:'12 wks', status:'Sent', note:'With Calacatta top', markupOverride:25},
+      ]},
+    ]},
+    {id:'p2', name:'Apartment Marais', type:'Apartment', clientId:'c2', cover:'linear-gradient(135deg,#9A6B4F,#5C4030)', rooms:[
+      {id:'r4', name:'Salon', items:[
+        {id:'i11', name:'Togo Sofa — 3 seats', cat:'Furniture', supplier:'Ligne Roset', dims:'174 × 102 × 70 cm', qty:1, cost:4300, lead:'8 wks', status:'Sent', note:'Alcantara terracotta'},
+        {id:'i12', name:'Akari 10A Floor Lamp', cat:'Lighting', supplier:'Vitra', dims:'H 122 cm', qty:1, cost:780, lead:'2 wks', status:'Draft', note:''},
+      ]},
+      {id:'r5', name:'Bathroom', items:[
+        {id:'i13', name:'Freestanding Bathtub', cat:'Sanitaryware', supplier:'Agape', dims:'170 × 75 cm', qty:1, cost:5200, lead:'10 wks', status:'Draft', note:'Cristalplant white'},
+        {id:'i14', name:'Zellige Tiles — Bone', cat:'Finishes', supplier:'Mosaic Factory', dims:'≈ 24 m²', qty:1, cost:1380, lead:'6 wks', status:'Draft', note:'10×10, walls'},
+      ]},
+    ]},
+    {id:'p3', name:'Hera Tower — Lobby', type:'Building', clientId:'c3', cover:'linear-gradient(135deg,#3C4A57,#1E2730)', rooms:[
+      {id:'r6', name:'Lobby', items:[
+        {id:'i15', name:'Reception Desk — Stone', cat:'Joinery', supplier:'Atelier Bois', dims:'420 × 90 × 110 cm', qty:1, cost:14500, lead:'14 wks', status:'Sent', note:'Verde Alpi marble front'},
+        {id:'i16', name:'Linear Pendant System', cat:'Lighting', supplier:'Vibia', dims:'L 600 cm', qty:3, cost:2100, lead:'7 wks', status:'Sent', note:''},
+      ]},
+    ]},
+  ],
+  library: [
+    {id:'L1', name:'Frida Lounge Chair', cat:'Furniture', section:'Seating', brand:'Vincent Sheppard', sku:'FLC564', supplier:'Frama', w:910,d:800,h:800, colour:'Black', material:'Rope & Teak', finish:'As Shown', cost:980, rrp:1295, lead:'6–8 wks', url:'https://www.vincentsheppard.com/frida'},
+    {id:'L2', name:'Offset Coffee Table', cat:'Furniture', section:'Tables', brand:'Resident', sku:'OCT-900', supplier:'Resident', w:900,l:900,h:350,d:900, colour:'Black', material:'Solid Oak', finish:'Stained', cost:1100, rrp:1480, lead:'In Stock'},
+    {id:'L3', name:'IC Pendant Light', cat:'Lighting', section:'Pendant Lights', brand:'Flos', sku:'IC-S1', supplier:'Flos', h:300, colour:'Brass', material:'Glass & Brass', cost:430, rrp:620, lead:'3 wks'},
+    {id:'L4', name:'Zellige Tiles — Bone', cat:'Finishes', section:'Wall Finishes', brand:'Mosaic Factory', supplier:'Mosaic Factory', dims:'10 × 10 cm', colour:'Bone', material:'Terracotta', finish:'Glazed', cost:58, rrp:79, lead:'6 wks'},
+    {id:'L5', name:'KV1 Mixer Tap', cat:'Fixtures', section:'Tapware', brand:'Vola', sku:'KV1-19', supplier:'Vola', h:225, colour:'Brass', material:'Brass', finish:'Unlacquered', cost:1150, rrp:1490, lead:'4 wks'},
+  ],
+};
+/* pinboards: per project */
+const BOARD_COLORS=[['#5C6B57','Sage'],['#2E3440','Charcoal'],['#8A7A5C','Olive Stone'],['#EFEDE6','Chalk'],['#9A6B4F','Terracotta'],['#C8BCA9','Greige'],['#3C4A57','Slate'],['#B98A4E','Brass']];
+function swatchURI(hex,label){
+  const dark=['#EFEDE6','#C8BCA9'].includes(hex)?'#555':'#fff';
+  return 'data:image/svg+xml;utf8,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300"><rect width="300" height="300" fill="${hex}"/><text x="20" y="272" font-family="Georgia" font-size="20" fill="${dark}" opacity=".85">${label}</text></svg>`);
+}
+let BOARDS = {
+  p1: [
+    {name:'Concept', images: BOARD_COLORS.slice(0,4).map(([h,l])=>({src:swatchURI(h,l), note:l+' — concept palette'}))},
+    {name:'Materials & Finishes', images: BOARD_COLORS.slice(4).map(([h,l])=>({src:swatchURI(h,l), note:l}))},
+  ],
+  p2: [ {name:'Concept', images: [['#9A6B4F','Terracotta'],['#2E3440','Charcoal']].map(([h,l])=>({src:swatchURI(h,l), note:l}))} ],
+  p3: [ {name:'Lobby References', images: []} ],
+};
+let idSeq = 100;
+const uid = p => p + (++idSeq);
+
+let session = null;          // {role:'designer'|'client', clientId?}
+let curProjectId = null;
+let curFloorId = null;
+let curRoomId = null;
+
+/* ---- helpers ---- */
+const $ = id => document.getElementById(id);
+let LANG = (()=>{ try{ return localStorage.getItem('vizir-lang')||'en'; }catch(e){ return 'en'; } })();
+let CURRENCY = (()=>{ try{ return localStorage.getItem('vizir-cur')||'EUR'; }catch(e){ return 'EUR'; } })();
+function fmt(n){
+  const loc = LANG==='fr'?'fr-FR':'en-US';
+  try{ return new Intl.NumberFormat(loc,{style:'currency',currency:CURRENCY,maximumFractionDigits:0,minimumFractionDigits:0}).format(Math.round(n||0)); }
+  catch(e){ const v=Math.round(n||0).toLocaleString(loc); return CURRENCY==='XOF'? v+' FCFA' : '€'+v; }
+}
+const clientOf = p => DB.clients.find(c=>c.id===p.clientId);
+const projById = id => DB.projects.find(p=>p.id===id);
+function effMarkup(item, proj){ return item.markupOverride!=null ? item.markupOverride : clientOf(proj).markup; }
+function clientPrice(item, proj){
+  if(item.priceOverride!=null) return item.priceOverride*item.qty;
+  return item.cost*item.qty*(1+effMarkup(item,proj)/100);
+}
+function roomsOf(p){ return (p.floors||[]).flatMap(f=>f.rooms||[]); }
+function allItems(p){ return roomsOf(p).flatMap(r=>r.items); }
+function migrateProject(p){
+  if(p.floors) return p;
+  const rooms = p.rooms || [];
+  const floor = {id:uid('f'), name:'Ground Floor', plans:[], rooms};
+  rooms.forEach(r=>{ if(Array.isArray(r.plans)){ r.plans.forEach(pl=>floor.plans.push(pl)); delete r.plans; } });
+  p.floors=[floor]; delete p.rooms; return p;
+}
+function findRoomFloor(p,rid){ for(const f of (p.floors||[])){ const r=f.rooms.find(x=>x.id===rid); if(r) return {floor:f, room:r}; } return null; }
+function curFloor(){ const p=projById(curProjectId); if(!p) return null; return p.floors.find(f=>f.id===curFloorId) || p.floors[0] || null; }
+function toast(msg){ scheduleSave(); const t=$('toast'); t.textContent=(typeof LANG!=='undefined'&&LANG==='fr')?(_tr(msg)||msg):msg; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),2600); }
+function viewImage(src,cap){ $('lightboxImg').src=src; $('lightboxCap').textContent=cap||''; $('lightboxBack').classList.remove('hidden'); }
+function closeLightbox(){ $('lightboxBack').classList.add('hidden'); $('lightboxImg').src=''; }
+function viewPlan(ix){ const f=curFloor(); const pl=f&&f.plans&&f.plans[ix]; if(pl) viewImage(pl.src, (f.name+' — '+(pl.note||'floorplan'))); }
+function viewHero(ix){ const r=curRoom(); const h=r&&r.renders&&r.renders[ix]; if(h) viewImage(h.src, h.note||r.name); }
+function swatch(cat){ return `<div class="swatch" style="background:${CAT_BG[cat]||'#EFECE5'}">${CAT_EMOJI[cat]||'📦'}</div>`; }
+function statusTag(s){ return `<span class="tag ${s.toLowerCase()}">${s}</span>`; }
+/* ================= AUTH & NAV ================= */
+function quickLogin(e,p){ $('loginEmail').value=e; $('loginPass').value=p; doLogin(); }
+function _authErr(msg){ const e=$('loginError'); e.textContent=msg; e.style.display='block'; }
+function toggleAuthMode(){
+  authMode = authMode==='signin'?'signup':'signin';
+  $('signupOnly').classList.toggle('hidden', authMode!=='signup');
+  $('authBtn').textContent = authMode==='signup'?'Create account':'Sign in';
+  $('authToggleTxt').textContent = authMode==='signup'?'Have an account?':'New studio?';
+  $('authToggleBtn').textContent = authMode==='signup'?'Sign in instead':'Create a studio account';
+  $('loginError').style.display='none';
+}
+async function doAuth(){
+  if(!sb){ _authErr('Cloud not reachable — try the local demo below.'); return; }
+  const email=$('loginEmail').value.trim().toLowerCase(), pass=$('loginPass').value;
+  if(!email||!pass){ _authErr('Enter your email and password'); return; }
+  $('authBtn').disabled=true; $('loginError').style.display='none';
+  try{
+    if(authMode==='signup'){
+      const studio=$('loginStudio').value.trim()||email.split('@')[0];
+      const {data,error}=await sb.auth.signUp({email,password:pass,options:{data:{studio_name:studio}}});
+      if(error){ _authErr(error.message); return; }
+      if(!data.session){ _authErr('Account created — check your email to confirm, then sign in.'); authMode='signup'; toggleAuthMode(); return; }
+      session={role:'designer', uid:data.user.id, studio};
+      await loadFromCloud(); enterApp();
+    } else {
+      const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
+      if(error){ _authErr('Invalid email or password'); return; }
+      session={role:'designer', uid:data.user.id};
+      await loadFromCloud(); enterApp();
+    }
+  }catch(err){ _authErr('Network error — try again'); }
+  finally{ $('authBtn').disabled=false; }
+}
+function localDemo(){
+  session={role:'designer', local:true};
+  const had = restore();
+  DB.projects.forEach(migrateProject);
+  if(!had){ const vp=DB.projects[0]; if(vp&&vp.floors&&vp.floors[0]){ vp.floors[0].name='Ground Floor'; vp.floors[0].plans=[{src:samplePlanURI('Ground Floor'),note:'Ground Floor — GA plan v1 · 1:50',shared:true}]; const fr=vp.floors[0].rooms[0]; if(fr) fr.renders=[{src:sampleRenderURI(),note:'Living Room — concept render v2',shared:true}]; } }
+  enterApp();
+}
+async function logout(){ try{ if(sb && session && !session.local) await sb.auth.signOut(); }catch(e){} session=null; cloudReady=false; $('app').classList.add('hidden'); $('clientPortal').classList.add('hidden'); $('loginScreen').classList.remove('hidden'); $('loginError').style.display='none'; }
+function enterApp(){ $('loginScreen').classList.add('hidden'); $('app').classList.remove('hidden'); nav('dashboard'); }
+async function loadFromCloud(){
+  cloudReady=false; let loaded=false;
+  try{
+    const {data,error}=await sb.from('app_state').select('data').eq('owner_id',session.uid).maybeSingle();
+    if(!error && data && data.data && data.data.DB){ DB=data.data.DB; BOARDS=data.data.BOARDS||{}; if(typeof data.data.idSeq==='number') idSeq=data.data.idSeq; loaded=true; }
+  }catch(e){}
+  if(!loaded){
+    let local=null; try{ local=JSON.parse(localStorage.getItem(STORE_KEY)||'null'); }catch(e){}
+    if(local && local.DB && Array.isArray(local.DB.projects) && local.DB.projects.length){
+      DB=local.DB; BOARDS=local.BOARDS||{}; if(typeof local.idSeq==='number') idSeq=local.idSeq;
+      setTimeout(()=>toast('Imported your local data into the cloud'),600);
+    } else { DB={clients:[],projects:[],library:[]}; BOARDS={}; }
+  }
+  DB.clients=DB.clients||[]; DB.projects=DB.projects||[]; DB.library=DB.library||[]; BOARDS=BOARDS||{};
+  DB.projects.forEach(migrateProject);
+  cloudReady=true; cloudSave();
+}
+function cloudSave(){
+  if(!cloudReady || !session || session.local || !session.uid || !sb) return;
+  clearTimeout(_cloudT);
+  _cloudT=setTimeout(async ()=>{
+    try{
+      (DB.projects||[]).forEach(pr=>{ if(!pr.shareToken) pr.shareToken=crypto.randomUUID(); });
+      await sb.from('app_state').upsert({owner_id:session.uid, data:{DB,BOARDS,idSeq}, updated_at:new Date().toISOString()});
+      const shares=(DB.projects||[]).filter(pr=>pr.shareToken).map(pr=>({token:pr.shareToken, owner_id:session.uid, project_id:String(pr.id), updated_at:new Date().toISOString()}));
+      if(shares.length) await sb.from('project_shares').upsert(shares,{onConflict:'token'});
+    }catch(e){}
+  }, 700);
+}
+/* ---- client portal (remote, via share link + access code) ---- */
+let portalToken=null, portalCode='', portalData=null;
+function copyShare(link,code){ try{ navigator.clipboard.writeText(link+' (access code: '+code+')'); }catch(e){} toast('Client link copied'); }
+function showPortalGate(token){
+  portalToken=token;
+  openModal(`<div class="modal-head"><h3>Client access</h3></div>
+  <div class="modal-body"><p class="micro" style="margin-bottom:8px">Enter the access code your designer shared with you to view and approve your project.</p>
+  <label>Access code</label><input id="pgCode" placeholder="e.g. a1b2c3">
+  <div id="pgErr" style="color:var(--red);font-size:12.5px;margin-top:8px;display:none"></div></div>
+  <div class="modal-foot"><button class="btn-accent" id="pgBtn" onclick="portalEnter()">View my project</button></div>`);
+  setTimeout(()=>{ const i=$('pgCode'); if(i){ i.focus(); i.addEventListener('keydown',e=>{ if(e.key==='Enter') portalEnter(); }); } },60);
+}
+async function portalEnter(){
+  if(!sb) return;
+  const code=($('pgCode').value||'').trim(); if(!code) return;
+  const b=$('pgBtn'); if(b) b.disabled=true;
+  try{
+    const {data,error}=await sb.functions.invoke('portal',{body:{token:portalToken, code, action:'get'}});
+    if(error || !data || data.error){ const e=$('pgErr'); if(e){ e.textContent=(data&&data.error)||'Could not load — try again.'; e.style.display='block'; } return; }
+    portalCode=code; portalData=data; closeModal(); renderPortalRemote();
+  }catch(err){ const e=$('pgErr'); if(e){ e.textContent='Network error'; e.style.display='block'; } }
+  finally{ const bb=$('pgBtn'); if(bb) bb.disabled=false; }
+}
+function cpRemoteRow(i){
+  return `<div class="cp-item"><div></div>
+    <div><div class="item-name">${i.name}</div><div class="item-sub">${i.section}${i.brand?' · '+i.brand:''}${i.dims?' · '+i.dims:''}</div>
+    ${i.note?`<div class="cp-note">"${i.note}"</div>`:''}${i.clientComment?`<div class="cp-note" style="color:var(--red)">${i.clientComment}</div>`:''}</div>
+    <div class="item-sub">Qty ${i.qty}${i.lead?' · '+i.lead:''}</div>
+    <div class="num-cell price-cell">${fmt(i.price)}</div>
+    <div class="cp-actions">${ i.status==='Sent'
+      ? `<button class="btn-approve" onclick="portalDecide('${i.id}','Approved')">✓ Approve</button> <button class="btn-decline" onclick="portalDecide('${i.id}','Declined')">Decline</button>`
+      : statusTag(i.status)+(i.status==='Declined'?` <button class="btn-approve" onclick="portalDecide('${i.id}','Approved')">✓ Approve</button>`:'') }</div></div>`;
+}
+function renderPortalRemote(){
+  const d=portalData; if(!d) return;
+  $('clientPortal').classList.remove('hidden');
+  $('cpWho').textContent=d.client.name||'';
+  $('cpType').textContent=(d.project.type||'')+' · prepared for '+(d.client.name||'');
+  $('cpProject').textContent=d.project.name||'';
+  const items=d.floors.flatMap(f=>f.rooms.flatMap(r=>r.items));
+  const total=items.reduce((a,i)=>a+i.price,0), appr=items.filter(i=>i.status==='Approved');
+  $('cpStats').innerHTML=[
+    [fmt(total),'Total investment','across '+items.length+' selections'],
+    [appr.length+' / '+items.length,'Approved selections',fmt(appr.reduce((a,i)=>a+i.price,0))+' confirmed'],
+    [items.filter(i=>i.status==='Sent').length,'Awaiting your review','tap approve or decline below'],
+  ].map(([n,l,sx])=>`<div class="stat"><div class="num">${n}</div><div class="lbl">${l}</div><div class="delta" style="color:var(--muted)">${sx}</div></div>`).join('');
+  $('cpRooms').innerHTML = d.floors.map(f=>{
+    const fplans=f.plans||[];
+    const roomsHtml=f.rooms.map(r=>{
+      if(!r.items.length && !(r.renders||[]).length) return '';
+      const rt=r.items.reduce((a,i)=>a+i.price,0);
+      return `<div class="cp-room"><div class="cp-room-head"><h2>${r.name}</h2><div class="rt">${r.items.length} selections · <b style="color:var(--ink)">${fmt(rt)}</b></div></div>
+        ${(r.renders||[]).length?`<div class="cp-heroes">${r.renders.map(h=>`<div class="hero-card" onclick="viewImage('${h.src}','')"><img src="${h.src}"><div class="hero-cap">${h.note||''}</div></div>`).join('')}</div>`:''}
+        ${r.items.length?`<div class="card">${r.items.map(cpRemoteRow).join('')}</div>`:''}</div>`;
+    }).join('');
+    if(!fplans.length && !roomsHtml.trim()) return '';
+    return `<div class="cp-floor"><div class="cp-floor-title">${f.name}</div>
+      ${fplans.length?`<div class="cp-plans">${fplans.map(pl=>`<div class="plan-card" onclick="viewImage('${pl.src}','')"><img src="${pl.src}"><div class="bi-note">${pl.note||''}</div></div>`).join('')}</div>`:''}
+      ${roomsHtml}</div>`;
+  }).join('') || '<div class="empty card"><div class="big">Nothing to review yet</div></div>';
+  if(LANG==='fr') applyLang();
+}
+async function portalDecide(itemId, decision){
+  let comment='';
+  if(decision==='Declined'){ comment=(prompt('Optional — tell your designer why (alternative, budget, colour…):','')||''); }
+  try{ await sb.functions.invoke('portal',{body:{token:portalToken, code:portalCode, action:'decide', itemId, decision, comment}}); }catch(e){}
+  portalData.floors.forEach(f=>f.rooms.forEach(r=>r.items.forEach(i=>{ if(i.id===itemId){ i.status=decision; if(comment) i.clientComment=comment; } })));
+  renderPortalRemote();
+  toast(decision==='Approved'?'Approved — your designer is notified':'Declined — feedback sent');
+}
+function toggleSidebar(force){
+  const sb=document.querySelector('.sidebar'), ov=$('navOverlay');
+  if(!sb||!ov) return;
+  const open = force===undefined ? !sb.classList.contains('open') : force;
+  sb.classList.toggle('open',open); ov.classList.toggle('show',open);
+}
+function nav(v){
+  document.querySelectorAll('.view').forEach(x=>x.classList.add('hidden'));
+  $('view-'+v).classList.remove('hidden');
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active', b.dataset.view===v));
+  if(window.innerWidth<=860) toggleSidebar(false);
+  if(v==='dashboard') renderDashboard();
+  if(v==='projects') renderProjects();
+  if(v==='renders') fillDetProjects();
+  if(v==='library') renderLibrary();
+  if(v==='boards') renderBoards();
+  if(v==='clients') renderClients();
+}
+
+/* ================= DASHBOARD ================= */
+function renderDashboard(){
+  const projs=DB.projects, items=projs.flatMap(allItems);
+  const pending=items.filter(i=>i.status==='Sent').length;
+  const approvedVal=projs.reduce((s,p)=>s+allItems(p).filter(i=>i.status==='Approved').reduce((a,i)=>a+clientPrice(i,p),0),0);
+  const portfolio=projs.reduce((s,p)=>s+allItems(p).reduce((a,i)=>a+clientPrice(i,p),0),0);
+  $('dashStats').innerHTML = [
+    [projs.length,'Active projects',''],
+    [items.length,'Specified items',pending+' awaiting approval'],
+    [fmt(portfolio),'Portfolio value','client pricing'],
+    [fmt(approvedVal),'Approved value','signed off by clients'],
+  ].map(([n,l,d])=>`<div class="stat"><div class="num">${n}</div><div class="lbl">${l}</div>${d?`<div class="delta">${d}</div>`:''}</div>`).join('');
+  $('dashProjects').innerHTML = projs.map(projCard).join('');
+}
+function projCard(p){
+  const items=allItems(p), appr=items.filter(i=>i.status==='Approved').length;
+  const pct=items.length?Math.round(appr/items.length*100):0;
+  const val=items.reduce((a,i)=>a+clientPrice(i,p),0);
+  return `<div class="proj-card" onclick="openProject('${p.id}')">
+    <div class="proj-cover" style="background:${p.cover}">${p.name}</div>
+    <div class="proj-body">
+      <div class="proj-meta"><span class="tag type">${p.type}</span><span>${clientOf(p).name}</span></div>
+      <div class="proj-bar"><i style="width:${pct}%"></i></div>
+      <div class="proj-foot"><span>${p.floors.length} floor${p.floors.length>1?'s':''} · ${roomsOf(p).length} rooms · ${items.length} items</span><span><b style="color:var(--ink)">${fmt(val)}</b> · ${pct}% approved</span></div>
+    </div></div>`;
+}
+function renderProjects(){ $('projGrid').innerHTML = DB.projects.map(projCard).join(''); }
+
+/* ================= PROJECT / SCHEDULE ================= */
+function openProject(pid, rid){
+  curProjectId=pid;
+  const p=projById(pid); migrateProject(p);
+  if(rid){ const fr=findRoomFloor(p,rid); curFloorId=fr?fr.floor.id:(p.floors[0]&&p.floors[0].id); curRoomId=rid; }
+  else { const f=p.floors[0]; curFloorId=f?f.id:null; curRoomId=(f&&f.rooms[0]&&f.rooms[0].id)||null; }
+  schedSearch=''; const ss=$('schedSearch'); if(ss) ss.value='';
+  nav('projects');
+  document.querySelectorAll('.view').forEach(x=>x.classList.add('hidden'));
+  $('view-project').classList.remove('hidden');
+  renderProjectDetail();
+}
+/* ---- sections & doc codes ---- */
+const SEC_PREFIX={'Seating':'CH','Tables':'TB','Lighting':'LT','Artwork':'AT','Rugs & Textiles':'RG','Wall Finishes':'PF','Floor Finishes':'TF','Joinery':'JN','Tapware':'TP','Pendant Lights':'PL','Storage':'ST','Window Treatments':'WT','Furniture':'FU','Fixtures':'FX','Finishes':'FN','Soft Furnishings':'SF','Appliances':'AP','Sanitaryware':'SW'};
+function getSection(i){ return i.section || i.cat; }
+function secPrefix(n){ return SEC_PREFIX[n] || n.replace(/[^A-Za-z]/g,'').slice(0,2).toUpperCase(); }
+function docCode(sn,ix){ return secPrefix(sn)+String(ix+1).padStart(2,'0'); }
+function dimsOf(i){
+  if(i.dims) return i.dims;
+  const p=[]; if(i.w)p.push('W '+i.w); if(i.l)p.push('L '+i.l); if(i.h)p.push('H '+i.h); if(i.d)p.push('D '+i.d);
+  return p.length?p.join(' × ')+' mm':'—';
+}
+function thumb(i){
+  if(i.images&&i.images[0]) return `<div class="swatch" style="padding:0;overflow:hidden"><img src="${i.images[0]}" style="width:100%;height:100%;object-fit:cover"></div>`;
+  return swatch(i.cat);
+}
+let schedView='summary', schedSearch='';
+function setSchedView(v){ schedView=v; $('vtSummary').classList.toggle('active',v==='summary'); $('vtFinancial').classList.toggle('active',v==='financial'); renderProjectDetail(); }
+function toggleMenu(id){ $(id).classList.toggle('hidden'); }
+document.addEventListener('click',e=>{ if(!e.target.closest('.dd-wrap')) document.querySelectorAll('.dd-menu').forEach(m=>m.classList.add('hidden')); });
+
+const STATUSES=['Draft','Sent','Approved','Declined'];
+function statusSel(i){
+  return `<select class="status-sel tag ${i.status.toLowerCase()}" onclick="event.stopPropagation()" onchange="setStatus('${i.id}',this.value)">
+    ${STATUSES.map(s=>`<option ${s===i.status?'selected':''}>${s}</option>`).join('')}</select>`;
+}
+function renderProjectDetail(){
+  const p=projById(curProjectId); if(!p) return;
+  const c=clientOf(p);
+  $('pdName').textContent=p.name; $('pdType').textContent=p.type;
+  $('pdClient').textContent=c.name;
+  $('pdMarkup').textContent='+'+c.markup+'%';
+  if(!p.shareToken) p.shareToken=crypto.randomUUID();
+  if(c){
+    if(!c.accessCode && !c.access_code) c.accessCode=Math.random().toString(36).slice(2,8);
+    const _lk=location.origin+location.pathname+'?p='+p.shareToken, _cd=c.accessCode||c.access_code;
+    $('pdShare').innerHTML=`Client link: <b style="word-break:break-all">${_lk}</b> · code <b>${_cd}</b> <button class="btn-ghost btn-sm" style="margin-left:6px" onclick="copyShare('${_lk}','${_cd}')">Copy</button>`;
+  } else { $('pdShare').textContent='Assign a client to enable the portal link'; }
+  migrateProject(p);
+  if(!p.floors.length) p.floors.push({id:uid('f'),name:'Ground Floor',plans:[],rooms:[]});
+  let floor=p.floors.find(f=>f.id===curFloorId); if(!floor){ floor=p.floors[0]; curFloorId=floor.id; }
+  /* floor selector */
+  $('roomTabs').innerHTML = p.floors.map(f=>
+    `<button class="room-tab ${f.id===curFloorId?'active':''}" onclick="switchFloor('${f.id}')">${f.name}<span class="cnt">${f.rooms.length}</span></button>`).join('')
+    + `<button class="room-tab" style="border-style:dashed" onclick="openFloorModal()">+ Floor</button>`;
+  const wrap=$('schedSections');
+  let html='';
+  /* floor-level floorplan gallery */
+  floor.plans=floor.plans||[];
+  html+=`<div class="sec-head" style="padding-top:4px">
+    <h3 class="serif">Floorplan</h3><span class="cnt">${floor.plans.length}</span>
+    <span class="micro" style="margin-left:4px">plans for ${floor.name} — shared with the client</span>
+    <span style="margin-left:auto;display:flex;gap:6px">
+      <button class="btn-ghost btn-sm" onclick="renameFloor('${floor.id}')">✎ Rename</button>
+      ${p.floors.length>1?`<button class="btn-ghost btn-sm" style="color:var(--red)" onclick="removeFloor('${floor.id}')">Delete floor</button>`:''}
+    </span></div>
+  <div class="plan-strip" ondragover="dragOn(event)" ondragleave="dragOff(event)" ondrop="dropPlans(event)">
+    ${floor.plans.map((pl,ix)=>`<div class="plan-card">
+      <button class="zoom-btn" title="View full size" onclick="event.stopPropagation();viewPlan(${ix})">⤢</button>
+      <img src="${pl.src}" onclick="viewPlan(${ix})">
+      <div class="bi-note" onclick="editPlan(${ix})" style="cursor:pointer">${pl.note||'Add note…'}${pl.shared===false?' · <i>hidden from client</i>':''} · <span style="color:var(--accent)">edit</span></div></div>`).join('')}
+    <div class="plan-add" onclick="planUpload()">⇪ Upload plan<span style="font-size:10.5px">floor plan, elevation, joinery drawing…</span></div>
+  </div>`;
+  /* room tabs within this floor */
+  html+=`<div class="sec-head"><h3 class="serif">Rooms</h3><span class="cnt">${floor.rooms.length}</span>
+    <span class="micro" style="margin-left:4px">rooms on ${floor.name}</span></div>
+  <div class="room-tabs">${floor.rooms.map(r=>
+    `<button class="room-tab ${r.id===curRoomId?'active':''}" onclick="switchRoom('${r.id}')">${r.name}<span class="cnt">${r.items.length}</span></button>`).join('')}
+    <button class="room-tab" style="border-style:dashed" onclick="openRoomModal()">+ Room</button></div>`;
+  let room=floor.rooms.find(r=>r.id===curRoomId);
+  if(!room){ room=floor.rooms[0]; curRoomId=room?room.id:null; }
+  if(!room){ wrap.innerHTML=html+`<div class="empty card" style="margin-top:16px"><div class="big">No rooms on ${floor.name}</div>Add a room to start the schedule.</div>`; return; }
+  const q=schedSearch.trim().toLowerCase();
+  const match=i=>!q||[i.name,i.brand,i.supplier,i.cat,getSection(i),i.sku].join(' ').toLowerCase().includes(q);
+  const secNames=[...new Set([...(room.sections||[]), ...room.items.map(getSection)])];
+  /* room renders gallery */
+  room.renders=room.renders||[];
+  html+=`<div class="sec-head" style="padding-top:14px"><h3 class="serif">${room.name} · Renders</h3><span class="cnt">${room.renders.length}</span>
+    <span class="micro" style="margin-left:4px">visuals shown to the client — run AI takeoff straight from a render</span></div>
+  <div class="hero-strip" ondragover="dragOn(event)" ondragleave="dragOff(event)" ondrop="dropRenders(event)">
+    ${room.renders.map((h,ix)=>`<div class="hero-card" onclick="editHero(${ix})">
+      <img src="${h.src}">
+      <button class="hero-ai" onclick="event.stopPropagation();heroTakeoff(${ix})">⚡ AI takeoff</button>
+      <div class="hero-cap">${h.note||'Add caption…'}${h.shared===false?' · hidden from client':''}</div></div>`).join('')}
+    <div class="hero-add" onclick="heroUpload()">⇪ Add render<span style="font-size:10.5px">3D view, photo, visual…</span></div>
+  </div>`;
+  html+=`<div class="import-dz" ondragover="dragOn(event)" ondragleave="dragOff(event)" ondrop="dropSchedImport(event)" onclick="document.getElementById('importFile').click()">
+    <b>⊞ Import a schedule</b> — drag an Excel (.xlsx) or CSV file here, or click to browse · rows are added to <b>${room.name}</b></div>`;
+  if(!secNames.length) html+=`<div class="empty card" style="margin-top:18px"><div class="big">Empty schedule</div>Add a section, clip from a URL, or run a render through <a href="#" onclick="nav('renders');return false" style="color:var(--accent)">AI takeoff</a>.</div>`;
+  secNames.forEach(sn=>{
+    const all=room.items.filter(i=>getSection(i)===sn);
+    const items=all.filter(match);
+    if(q && !items.length) return;
+    html+=`<div class="sec-head"><h3 class="serif">${sn}</h3><span class="cnt">${all.length}</span></div>`;
+    html+=`<div class="card"><table class="sched">${schedView==='summary'?sumHead():finHead()}<tbody>`;
+    html+= items.map(i=> schedView==='summary'?sumRow(i,p,sn,all.indexOf(i)):finRow(i,p,sn,all.indexOf(i))).join('')
+      || `<tr><td colspan="9"><div class="empty" style="padding:16px">No items yet in this section.</div></td></tr>`;
+    html+=`</tbody></table>`;
+    if(schedView==='financial' && all.length){
+      const cost=all.reduce((a,i)=>a+i.cost*i.qty,0), price=all.reduce((a,i)=>a+clientPrice(i,p),0);
+      html+=`<div class="sched-totals"><span class="cost-cell">Section trade: <b>${fmt(cost)}</b></span><span>Margin: <b style="color:var(--olive)">${fmt(price-cost)}</b></span><span>Client: <b>${fmt(price)}</b></span></div>`;
+    }
+    html+=`</div>`;
+    html+=`<div class="sec-actions">
+      <button class="btn-ghost" onclick="openUrlModal('${sn}')">✦ Add from URL</button>
+      <button class="btn-ghost" onclick="openLibraryPicker('${sn}')">▤ Product from library</button>
+      <button class="btn-ghost" onclick="openDrawer(null,'item','${sn}')">＋ Custom Product</button>
+    </div>`;
+  });
+  html+=`<div class="sec-actions" style="margin-top:20px;border-top:1px dashed var(--line);padding-top:16px">
+    <button class="btn-ghost" onclick="addSection()">＋ New Section</button></div>`;
+  if(room.items.length){
+    const cost=room.items.reduce((a,i)=>a+i.cost*i.qty,0);
+    const price=room.items.reduce((a,i)=>a+clientPrice(i,p),0);
+    html+=`<div class="sched-totals card" style="margin-top:16px">
+      <span class="cost-cell">Room trade total: <b>${fmt(cost)}</b></span>
+      <span>Margin: <b style="color:var(--olive)">${fmt(price-cost)}</b></span>
+      <span>Client total: <b>${fmt(price)}</b></span></div>`;
+  }
+  wrap.innerHTML=html;
+}
+function sumHead(){return `<thead><tr><th style="width:27%">Item</th><th>Brand</th><th>Dimensions</th><th>Col · Fin · Mat</th><th>Qty</th><th>Lead time</th><th>Supplier</th><th>Status</th><th></th></tr></thead>`;}
+function finHead(){return `<thead><tr><th style="width:27%">Item</th><th>Qty</th><th style="text-align:right">Trade (unit)</th><th>Markup</th><th>Tax</th><th style="text-align:right">Client (unit)</th><th style="text-align:right">Line total</th><th>Status</th><th></th></tr></thead>`;}
+function sumRow(i,p,sn,ix){
+  return `<tr onclick="openDrawer('${i.id}')" style="cursor:pointer">
+    <td><div class="item-cell">${thumb(i)}<div>
+      <div class="item-name">${i.name}</div>
+      <div class="item-sub">${i.details||i.note||i.cat}</div>
+      <div class="doc-code">${i.docCode||docCode(sn,ix)}</div></div></div></td>
+    <td class="micro"><b>${i.brand||'—'}</b>${i.sku?`<br>${i.sku}`:''}</td>
+    <td class="micro">${dimsOf(i)}</td>
+    <td class="micro">${i.colour||'—'}<br>${i.finish||'—'} · ${i.material||'—'}</td>
+    <td class="num-cell">${i.qty}</td>
+    <td class="micro">${i.lead||'—'}</td>
+    <td class="micro"><b>${i.supplier||'—'}</b></td>
+    <td>${statusSel(i)}</td>
+    <td onclick="event.stopPropagation()"><div class="row-actions">
+      <button class="btn-ghost btn-sm" onclick="openDrawer('${i.id}')">Details</button>
+      <button class="icon-btn" title="Delete" onclick="delItem('${i.id}')">✕</button>
+    </div></td></tr>`;
+}
+function finRow(i,p,sn,ix){
+  const mk=effMarkup(i,p), unit=clientPrice(i,p)/i.qty;
+  const mkTxt = i.priceOverride!=null ? 'manual' : '+'+mk+'%'+(i.markupOverride!=null?' *':'');
+  return `<tr onclick="openDrawer('${i.id}')" style="cursor:pointer">
+    <td><div class="item-cell">${thumb(i)}<div><div class="item-name">${i.name}</div><div class="doc-code">${i.docCode||docCode(sn,ix)}</div></div></div></td>
+    <td class="num-cell">${i.qty}</td>
+    <td class="num-cell cost-cell" style="text-align:right">${fmt(i.cost)}</td>
+    <td><span class="markup-pill">${mkTxt}</span></td>
+    <td class="micro">${i.taxable===false?'—':'✓'}</td>
+    <td class="num-cell" style="text-align:right">${fmt(unit)}</td>
+    <td class="num-cell price-cell" style="text-align:right">${fmt(unit*i.qty)}</td>
+    <td>${statusSel(i)}</td>
+    <td onclick="event.stopPropagation()"><div class="row-actions"><button class="btn-ghost btn-sm" onclick="openDrawer('${i.id}')">Details</button></div></td></tr>`;
+}
+function switchRoom(rid){ curRoomId=rid; renderProjectDetail(); }
+function switchFloor(fid){ curFloorId=fid; const f=curFloor(); curRoomId=(f&&f.rooms[0])?f.rooms[0].id:null; renderProjectDetail(); }
+function openFloorModal(){
+  openModal(`<div class="modal-head"><h3>Add floor</h3><button class="icon-btn" onclick="closeModal()">✕</button></div>
+  <div class="modal-body"><label>Floor name</label><input id="mFloorName" placeholder="First Floor, Basement, Roof Terrace…"></div>
+  <div class="modal-foot"><button class="btn-ghost" onclick="closeModal()">Cancel</button><button class="btn-accent" onclick="createFloor()">Add floor</button></div>`);
+}
+function createFloor(){
+  const n=$('mFloorName').value.trim(); if(!n) return;
+  const p=projById(curProjectId); const f={id:uid('f'),name:n,plans:[],rooms:[]};
+  p.floors.push(f); curFloorId=f.id; curRoomId=null; closeModal(); renderProjectDetail(); scheduleSave(); toast('Floor added — now add rooms');
+}
+function renameFloor(fid){
+  const p=projById(curProjectId); const f=p.floors.find(x=>x.id===fid); if(!f) return;
+  const n=prompt('Floor name:', f.name); if(n&&n.trim()){ f.name=n.trim(); renderProjectDetail(); scheduleSave(); }
+}
+function removeFloor(fid){
+  const p=projById(curProjectId); if(p.floors.length<=1){ toast('A project needs at least one floor'); return; }
+  const f=p.floors.find(x=>x.id===fid); if(!f) return;
+  if(f.rooms.length && !confirm('Delete '+f.name+' and its '+f.rooms.length+' room(s) and their schedules?')) return;
+  p.floors=p.floors.filter(x=>x.id!==fid);
+  curFloorId=p.floors[0].id; const nf=p.floors[0]; curRoomId=nf.rooms[0]?nf.rooms[0].id:null;
+  renderProjectDetail(); scheduleSave(); toast('Floor deleted');
+}
+function addSection(){
+  const n=prompt('New section name (e.g. Seating, Tables, Wall Lights):',''); if(!n) return;
+  const room=curRoom(); if(!room) return;
+  (room.sections=room.sections||[]).push(n.trim()); renderProjectDetail(); scheduleSave();
+}
+function curRoom(){ const p=projById(curProjectId); if(!p) return null; for(const f of (p.floors||[])){ const r=f.rooms.find(x=>x.id===curRoomId); if(r) return r; } return null; }
+/* ---- drag & drop image upload (renders, floorplans, pinboards) ---- */
+function dragOn(e){ e.preventDefault(); if(e.dataTransfer) e.dataTransfer.dropEffect='copy'; e.currentTarget.classList.add('dragover'); }
+function dragOff(e){ e.currentTarget.classList.remove('dragover'); }
+async function uploadImage(file){
+  if(sb && session && session.uid && !session.local){
+    try{
+      const ext=((file.name||'').split('.').pop()||'png').toLowerCase().replace(/[^a-z0-9]/g,'')||'png';
+      const path=session.uid+'/'+uid('img')+'-'+Date.now()+'.'+ext;
+      const {error}=await sb.storage.from('media').upload(path, file, {contentType:file.type||'image/png', upsert:false});
+      if(!error){ const {data}=sb.storage.from('media').getPublicUrl(path); if(data && data.publicUrl) return data.publicUrl; }
+    }catch(e){}
+  }
+  return await new Promise(res=>{ const rd=new FileReader(); rd.onload=ev=>res(ev.target.result); rd.readAsDataURL(file); });
+}
+function readImages(fileList, cb){
+  const files=[...(fileList||[])].filter(f=>f.type && f.type.startsWith('image/'));
+  if(!files.length){ toast('Drop image files (PNG/JPG)'); return; }
+  files.forEach(async f=>{ const url=await uploadImage(f); cb(url, f.name.replace(/\.\w+$/,'')); });
+}
+function dropRenders(e){
+  e.preventDefault(); dragOff(e);
+  const room=curRoom(); if(!room){ toast('Open a room first'); return; }
+  readImages(e.dataTransfer.files,(src,note)=>{ (room.renders=room.renders||[]).push({src,note,shared:true}); renderProjectDetail(); toast('Render added'); });
+}
+function dropPlans(e){
+  e.preventDefault(); dragOff(e);
+  const fl=curFloor(); if(!fl){ toast('Open a floor first'); return; }
+  readImages(e.dataTransfer.files,(src,note)=>{ (fl.plans=fl.plans||[]).push({src,note,shared:true}); renderProjectDetail(); toast('Plan added'); });
+}
+function dropBoard(e,pid,si){
+  e.preventDefault(); dragOff(e);
+  if(!BOARDS[pid]||!BOARDS[pid][si]) return;
+  readImages(e.dataTransfer.files,(src,note)=>{ BOARDS[pid][si].images.push({src,note}); renderBoards(); toast('Image added'); });
+}
+/* ---- room hero renders ---- */
+function heroUpload(){
+  const inp=$('planFile');
+  inp.onchange=e=>{
+    const room=curRoom();
+    [...e.target.files].forEach(async f=>{
+      if(!f.type.startsWith('image/')){ toast('Image files only'); return; }
+      const url=await uploadImage(f);
+      (room.renders=room.renders||[]).push({src:url, note:f.name.replace(/\.\w+$/,''), shared:true}); renderProjectDetail(); scheduleSave();
+    });
+    inp.value='';
+  };
+  inp.click();
+}
+function editHero(ix){
+  const room=curRoom(); const h=room.renders[ix];
+  openModal(`<div class="modal-head"><h3>Room render</h3><button class="icon-btn" onclick="closeModal()">✕</button></div>
+  <div class="modal-body">
+    <img src="${h.src}" style="width:100%;border-radius:9px;background:#1c1a17;max-height:300px;object-fit:contain">
+    <label>Caption</label><input id="mHrNote" value="${(h.note||'').replace(/"/g,'&quot;')}">
+    <div style="display:flex;align-items:center;gap:10px;margin-top:16px">
+      <span class="switch ${h.shared!==false?'on':''}" id="mHrShared" onclick="this.classList.toggle('on')"></span>
+      <b style="font-size:13px">Visible in client portal</b>
+    </div>
+  </div>
+  <div class="modal-foot" style="justify-content:space-between">
+    <button class="btn-ghost" onclick="curRoom().renders.splice(${ix},1);closeModal();renderProjectDetail();toast('Render removed')">Remove</button>
+    <div style="display:flex;gap:10px">
+      <button class="btn-ghost" onclick="closeModal();heroTakeoff(${ix})">⚡ AI takeoff</button>
+      <button class="btn-accent" onclick="saveHero(${ix})">Save</button></div>
+  </div>`);
+}
+function saveHero(ix){
+  const h=curRoom().renders[ix];
+  h.note=$('mHrNote').value; h.shared=$('mHrShared').classList.contains('on');
+  closeModal(); renderProjectDetail(); toast('Render saved');
+}
+function heroTakeoff(ix){
+  const h=curRoom().renders[ix];
+  nav('renders'); showRender(h.src);
+  toast('Running AI takeoff on room render…');
+}
+/* ---- floorplans ---- */
+function planUpload(){
+  const inp=$('planFile');
+  inp.onchange=e=>{
+    const fl=curFloor();
+    [...e.target.files].forEach(async f=>{
+      if(!f.type.startsWith('image/')){ toast('Image files only — export PDF plans as PNG/JPG'); return; }
+      const url=await uploadImage(f);
+      (fl.plans=fl.plans||[]).push({src:url, note:f.name.replace(/\.\w+$/,''), shared:true}); renderProjectDetail(); scheduleSave();
+    });
+    inp.value='';
+  };
+  inp.click();
+}
+function editPlan(ix){
+  const fl=curFloor(); const pl=fl.plans[ix];
+  openModal(`<div class="modal-head"><h3>${fl.name} — floorplan</h3><button class="icon-btn" onclick="closeModal()">✕</button></div>
+  <div class="modal-body">
+    <img src="${pl.src}" onclick="closeModal();viewPlan(${ix})" title="Click to view full size" style="width:100%;max-height:62vh;object-fit:contain;border-radius:9px;background:#FCFBF7;cursor:zoom-in">
+    <div style="text-align:right;margin-top:6px"><button class="btn-ghost btn-sm" onclick="closeModal();viewPlan(${ix})">⤢ View full size</button></div>
+    <label>Note / revision</label><input id="mPlNote" value="${(pl.note||'').replace(/"/g,'&quot;')}">
+    <div style="display:flex;align-items:center;gap:10px;margin-top:16px">
+      <span class="switch ${pl.shared!==false?'on':''}" id="mPlShared" onclick="this.classList.toggle('on')"></span>
+      <b style="font-size:13px">Visible in client portal</b>
+    </div>
+  </div>
+  <div class="modal-foot" style="justify-content:space-between">
+    <button class="btn-ghost" onclick="curFloor().plans.splice(${ix},1);closeModal();renderProjectDetail();toast('Plan removed')">Remove</button>
+    <div style="display:flex;gap:10px"><button class="btn-ghost" onclick="closeModal()">Cancel</button>
+    <button class="btn-accent" onclick="savePlan(${ix})">Save</button></div>
+  </div>`);
+}
+function savePlan(ix){
+  const pl=curFloor().plans[ix];
+  pl.note=$('mPlNote').value; pl.shared=$('mPlShared').classList.contains('on');
+  closeModal(); renderProjectDetail(); toast('Plan saved');
+}
+function samplePlanURI(label){
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500">
+  <rect width="800" height="500" fill="#FDFDFB"/>
+  <g fill="none" stroke="#221F1A" stroke-width="6">
+    <rect x="60" y="50" width="680" height="400"/>
+    <line x1="450" y1="50" x2="450" y2="250"/>
+    <line x1="450" y1="330" x2="450" y2="450"/>
+  </g>
+  <line x1="450" y1="250" x2="450" y2="330" stroke="#FDFDFB" stroke-width="8"/>
+  <path d="M450 330 a80 80 0 0 1 80 -80" fill="none" stroke="#9A6B4F" stroke-width="2"/>
+  <line x1="450" y1="330" x2="530" y2="330" stroke="#221F1A" stroke-width="3"/>
+  <line x1="180" y1="50" x2="330" y2="50" stroke="#FDFDFB" stroke-width="6"/>
+  <line x1="180" y1="50" x2="330" y2="50" stroke="#A9C4CE" stroke-width="4"/>
+  <g fill="none" stroke="#8A8378" stroke-width="2.5">
+    <rect x="110" y="120" width="210" height="85" rx="12"/>
+    <rect x="160" y="250" width="120" height="60" rx="6"/>
+    <circle cx="610" cy="150" r="48"/>
+    <rect x="540" y="330" width="155" height="72" rx="6"/>
+  </g>
+  <g font-family="Georgia" font-size="16" fill="#221F1A">
+    <text x="118" y="112">1</text><text x="168" y="242">2</text><text x="592" y="156">3</text><text x="548" y="322">4</text>
+  </g>
+  <text x="68" y="486" font-family="Georgia" font-size="18" fill="#8A8378">${label} — general arrangement · 1:50</text>
+  </svg>`;
+  return 'data:image/svg+xml;utf8,'+encodeURIComponent(svg);
+}
+function findItem(iid){
+  for(const p of DB.projects) for(const r of roomsOf(p)){ const i=r.items.find(x=>x.id===iid); if(i) return {p,r,i}; }
+  return null;
+}
+function setStatus(iid,s){ const f=findItem(iid); if(f){ f.i.status=s; renderProjectDetail(); toast(s==='Sent'?'Sent to client portal':'Status updated'); } }
+function delItem(iid){ const f=findItem(iid); if(f){ f.r.items=f.r.items.filter(x=>x.id!==iid); renderProjectDetail(); scheduleSave(); } }
+function exportSchedule(kind){
+  document.querySelectorAll('.dd-menu').forEach(m=>m.classList.add('hidden'));
+  const p=projById(curProjectId); if(!p) return;
+  if(kind==='pdf'){ toast('Schedule PDF generated (simulated in prototype)'); return; }
+  const rows=[['Floor','Room','Section','Code','Item','Brand','SKU','Supplier','Dimensions','Colour','Finish','Material','Qty','Lead','Trade EUR','Markup %','Client EUR','Status']];
+  p.floors.forEach(f=>f.rooms.forEach(r=>{
+    const secs=[...new Set(r.items.map(getSection))];
+    secs.forEach(sn=>r.items.filter(i=>getSection(i)===sn).forEach((i,ix)=>
+      rows.push([f.name,r.name,sn,docCode(sn,ix),i.name,i.brand||'',i.sku||'',i.supplier||'',dimsOf(i),i.colour||'',i.finish||'',i.material||'',i.qty,i.lead||'',i.cost,i.priceOverride!=null?'manual':effMarkup(i,p),Math.round(clientPrice(i,p)),i.status])));
+  }));
+  const csv=rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'}));
+  a.download=p.name.replace(/\s+/g,'-')+'-schedule.csv'; a.click();
+  toast('Schedule exported — opens in Excel');
+}
+
+/* ================= SPREADSHEET IMPORT (xlsx / csv) ================= */
+let importState=null;
+const IMP_FIELDS=[
+  {key:'name', label:'Item / Product', req:true, aliases:['item','product','productname','name','designation']},
+  {key:'section', label:'Section', aliases:['section','group','area','zone','subcategory']},
+  {key:'cat', label:'Category', aliases:['category','cat','producttype','type']},
+  {key:'brand', label:'Brand', aliases:['brand','manufacturer','make','marque']},
+  {key:'sku', label:'SKU / Ref', aliases:['sku','ref','reference','code','model','modelno','itemcode','productcode','articlenumber','article']},
+  {key:'supplier', label:'Supplier', aliases:['supplier','vendor','stockist','source','fournisseur']},
+  {key:'qty', label:'Qty', aliases:['qty','quantity','units','nr','no','count','qte']},
+  {key:'cost', label:'Trade / cost', aliases:['cost','trade','tradeprice','buy','net','netprice','unitcost','wholesale','price','unitprice','prix']},
+  {key:'rrp', label:'RRP', aliases:['rrp','retail','retailprice','list','listprice','msrp']},
+  {key:'lead', label:'Lead time', aliases:['lead','leadtime','eta','availability','delivery','delai']},
+  {key:'colour', label:'Colour', aliases:['colour','color','finishcolour','couleur']},
+  {key:'finish', label:'Finish', aliases:['finish','finishes','finition']},
+  {key:'material', label:'Material', aliases:['material','materials','composition','matiere']},
+  {key:'dims', label:'Dimensions', aliases:['dimensions','dims','size','dimension','measurements','wdh','sizes']},
+  {key:'note', label:'Notes / Description', aliases:['note','notes','comment','comments','remarks','remark','observation','description','desc','location','application']},
+  {key:'status', label:'Status', aliases:['status','stage','etat']},
+];
+function _normH(h){ return String(h==null?'':h).toLowerCase().replace(/[^a-z0-9]/g,''); }
+function _cap(s){ s=String(s||'').trim(); return s?s.charAt(0).toUpperCase()+s.slice(1).toLowerCase():s; }
+function _catGuess(s){
+  const n=_normH(s);
+  const exact=CATS.find(c=>_normH(c)===n); if(exact) return exact;
+  if(/light|lamp|pendant|chandelier|sconce/.test(n)) return 'Lighting';
+  if(/floor|stone|tile|marble|granite|material|finish|paint|wall|plaster/.test(n)) return 'Finishes';
+  if(/joiner|cabinet|millwork|wardrobe|cupboard|carpentry/.test(n)) return 'Joinery';
+  if(/sanitary|bath|basin|wc|shower|tap|faucet|fixture/.test(n)) return 'Fixtures';
+  if(/appliance|oven|fridge|hob|dishwasher/.test(n)) return 'Appliances';
+  if(/rug|curtain|textile|cushion|soft|drape|uphol/.test(n)) return 'Soft Furnishings';
+  return 'Furniture';
+}
+function autoMapHeaders(headers){
+  const norm=(headers||[]).map(_normH); const used=new Set(); const map={};
+  IMP_FIELDS.forEach(f=>{
+    let found=-1;
+    for(const a of f.aliases){ const k=norm.findIndex((h,ix)=>!used.has(ix)&&h===a); if(k>=0){found=k;break;} }
+    if(found<0){ for(const a of f.aliases){ if(a.length<3) continue; const k=norm.findIndex((h,ix)=>!used.has(ix)&&h.includes(a)); if(k>=0){found=k;break;} } }
+    map[f.key]=found; if(found>=0) used.add(found);
+  });
+  if(map.name<0){
+    /* no Item/Product column: borrow the name from a descriptive column (Description, Material, Application…) */
+    const PRIO=['description','desc','material','application','title','designation','item'];
+    for(const a of PRIO){ const k=norm.indexOf(a); if(k>=0){ map.name=k; break; } }
+    if(map.name<0){
+      const EXC=new Set(['code','qty','quantity','units','no','nr','finish','status','price','cost','rrp','markup','location','application','colour','color','area','zone','date','lead','leadtime']);
+      for(let k=0;k<norm.length;k++){ if(!used.has(k) && norm[k] && !EXC.has(norm[k])){ map.name=k; break; } }
+    }
+  }
+  if(map.note===map.name) map.note=-1;
+  return map;
+}
+function parseCsv(text){
+  const rows=[]; let row=[], cur='', q=false;
+  for(let k=0;k<text.length;k++){ const ch=text[k];
+    if(q){ if(ch==='"'){ if(text[k+1]==='"'){cur+='"';k++;} else q=false; } else cur+=ch; }
+    else { if(ch==='"') q=true;
+      else if(ch===','){ row.push(cur); cur=''; }
+      else if(ch==='\r'){}
+      else if(ch==='\n'){ row.push(cur); rows.push(row); row=[]; cur=''; }
+      else cur+=ch; }
+  }
+  if(cur.length||row.length){ row.push(cur); rows.push(row); }
+  return rows.filter(r=>r.some(c=>String(c).trim()!==''));
+}
+function dropSchedImport(e){
+  e.preventDefault(); dragOff(e);
+  const f=[...(e.dataTransfer.files||[])].find(x=>/\.(xlsx|xls|csv)$/i.test(x.name)||(x.type&&(x.type.includes('csv')||x.type.includes('sheet')||x.type.includes('excel'))));
+  if(!f){ toast('Drop an .xlsx or .csv file'); return; }
+  handleImportFile(f);
+}
+function handleImportFile(file){
+  const name=(file.name||'').toLowerCase();
+  const isCsv=name.endsWith('.csv')||(file.type||'').includes('csv');
+  const rd=new FileReader();
+  rd.onload=ev=>{
+    let sheets=[];
+    try{
+      if(isCsv){ const rows=parseCsv(String(ev.target.result)); if(rows.length) sheets=[{name:'CSV', data:rows}]; }
+      else {
+        if(typeof XLSX==='undefined'){ toast('Spreadsheet engine not loaded — export as CSV, or reconnect to the internet'); return; }
+        const wb=XLSX.read(new Uint8Array(ev.target.result),{type:'array'});
+        sheets=wb.SheetNames.map(sn=>{
+          const aoa=XLSX.utils.sheet_to_json(wb.Sheets[sn],{header:1,defval:'',raw:false}).map(r=>r.map(c=>c==null?'':c)).filter(r=>r.some(c=>String(c).trim()!==''));
+          return {name:sn, data:aoa};
+        }).filter(sh=>sh.data.length>=1);
+      }
+    }catch(err){ toast('Could not read that file'); return; }
+    if(!sheets.length){ toast('No rows found in the file'); return; }
+    openImportModal(sheets);
+  };
+  if(isCsv) rd.readAsText(file); else rd.readAsArrayBuffer(file);
+}
+function openImportModal(sheets){
+  if(!curRoom()){ toast('Open a project room first'); return; }
+  importState={sheets, sheetIndex:0, headerRow:true, sectionFromSheet: sheets.length>1, status:'Draft', map:{}};
+  recomputeImportMap(); renderImportModal();
+}
+function recomputeImportMap(){
+  const sh=importState.sheets[importState.sheetIndex];
+  importState.map=autoMapHeaders(importState.headerRow ? sh.data[0] : []);
+}
+function renderImportModal(){
+  const st=importState, sh=st.sheets[st.sheetIndex], data=sh.data;
+  const headers = st.headerRow ? (data[0]||[]).map((h,i)=>String(h).trim()||('Column '+(i+1))) : (data[0]||[]).map((_,i)=>'Column '+(i+1));
+  const nrows = Math.max(0, data.length - (st.headerRow?1:0));
+  const esc=t=>String(t).replace(/</g,'&lt;').replace(/"/g,'&quot;');
+  const opts = sel => `<option value="-1">— skip —</option>`+headers.map((h,i)=>`<option value="${i}" ${sel===i?'selected':''}>${esc(h)}</option>`).join('');
+  const room=curRoom(); const multi = st.sheets.length>1;
+  const sheetSel = multi ? `<div style="display:flex;gap:10px;align-items:center;margin-bottom:12px">
+      <div style="flex:1;font-size:12.5px">Sheet</div>
+      <select style="flex:1.1" onchange="importState.sheetIndex=parseInt(this.value);recomputeImportMap();renderImportModal()">
+        ${st.sheets.map((s2,i)=>`<option value="${i}" ${i===st.sheetIndex?'selected':''}>${esc(s2.name)} (${Math.max(0,s2.data.length-(st.headerRow?1:0))} rows)</option>`).join('')}
+      </select></div>` : '';
+  const fieldRows = IMP_FIELDS.map(f=>`<div style="display:flex;gap:10px;align-items:center;margin-bottom:7px">
+    <div style="flex:1;font-size:12.5px">${f.label}${f.req?' <span style="color:var(--red)">*</span>':''}</div>
+    <select style="flex:1.1" onchange="importState.map['${f.key}']=parseInt(this.value)">${opts(st.map[f.key])}</select>
+  </div>`).join('');
+  openModal(`<div class="modal-head"><h3>Import schedule</h3><button class="icon-btn" onclick="closeModal()">✕</button></div>
+  <div class="modal-body">
+    <p style="color:var(--muted);font-size:12.5px;margin-bottom:8px">Importing into <b>${room?room.name:'—'}</b>.${multi?` This file has <b>${st.sheets.length} sheets</b> — import the selected one, or all at once.`:''} Columns are auto-matched; adjust any below.</p>
+    ${sheetSel}
+    <div style="display:flex;align-items:center;gap:10px;margin:6px 0 10px">
+      <span class="switch ${st.headerRow?'on':''}" onclick="importState.headerRow=!importState.headerRow; recomputeImportMap(); renderImportModal()"></span>
+      <b style="font-size:13px">First row is a header</b>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;margin:6px 0 14px;flex-wrap:wrap">
+      <span class="switch ${st.sectionFromSheet?'on':''}" onclick="importState.sectionFromSheet=!importState.sectionFromSheet; renderImportModal()"></span>
+      <b style="font-size:13px">Use sheet name as Section</b>
+      ${multi?'<span class="micro">groups each sheet into its own section</span>':''}
+    </div>
+    ${fieldRows}
+    <div style="display:flex;gap:10px;align-items:center;margin-top:12px;border-top:1px solid var(--line);padding-top:12px">
+      <div style="flex:1;font-size:12.5px">Default status for imported items</div>
+      <select style="flex:1.1" onchange="importState.status=this.value">${STATUSES.map(x=>`<option ${x===st.status?'selected':''}>${x}</option>`).join('')}</select>
+    </div>
+  </div>
+  <div class="modal-foot" style="justify-content:space-between">
+    <button class="btn-ghost btn-sm" onclick="downloadImportTemplate()">⭳ Template CSV</button>
+    <div style="display:flex;gap:10px">
+      ${multi?`<button class="btn-ghost" onclick="runImport(true)">Import all sheets</button>`:''}
+      <button class="btn-accent" onclick="runImport(false)">Import ${nrows} row${nrows===1?'':'s'}</button>
+    </div>
+  </div>`);
+}
+function runImport(all){
+  const st=importState; const room=curRoom();
+  if(!room){ toast('Open a room first'); closeModal(); return; }
+  if(!all && st.map.name<0){ toast('Map the Item / Product column first'); return; }
+  const num=v=>{ const n=parseFloat(String(v).replace(/[^0-9.\-]/g,'')); return isNaN(n)?null:n; };
+  const list = all ? st.sheets.map((_,i)=>i) : [st.sheetIndex];
+  let added=0, sheetsUsed=0;
+  list.forEach(si=>{
+    const sh=st.sheets[si];
+    const map = (!all && si===st.sheetIndex) ? st.map : autoMapHeaders(st.headerRow ? sh.data[0] : []);
+    const start=st.headerRow?1:0; let any=false;
+    for(let r=start;r<sh.data.length;r++){
+      const row=sh.data[r]||[];
+      const g=k=> map[k]>=0 ? String(row[map[k]]==null?'':row[map[k]]).trim() : '';
+      const name=g('name'); if(!name) continue;
+      const section = st.sectionFromSheet ? sh.name : (g('section')||null);
+      let cat=g('cat'); cat=CATS.find(c=>c.toLowerCase()===cat.toLowerCase()) || _catGuess(section||g('name'));
+      const stt=_cap(g('status')); const status=STATUSES.includes(stt)?stt:st.status;
+      const it={id:uid('i'), name, brand:g('brand')||'', sku:g('sku')||'', supplier:g('supplier')||'',
+        section:section||null, cat, qty:Math.max(1,parseInt(g('qty'))||1),
+        cost:num(g('cost'))||0, rrp:num(g('rrp')), lead:g('lead')||'', colour:g('colour')||'',
+        finish:g('finish')||'', material:g('material')||'', note:g('note')||'', status, taxable:true};
+      const dv=g('dims'); if(dv) it.dims=dv;
+      room.items.push(it); added++; any=true;
+    }
+    if(any) sheetsUsed++;
+  });
+  closeModal(); renderProjectDetail(); scheduleSave();
+  toast(added?`${added} items imported into ${room.name}${all&&sheetsUsed>1?' ('+sheetsUsed+' sheets)':''}`:'No rows imported — check the Item column mapping');
+}
+function downloadImportTemplate(){
+  const cols=['Item','Section','Brand','SKU','Supplier','Qty','Trade EUR','RRP','Lead','Colour','Finish','Material','Dimensions','Notes','Status'];
+  const sample=['Camaleonda Sofa','Seating','B&B Italia','CAM-4M','B&B Italia','1','9800','13900','10-12 wks','Ivory','As Shown','Boucle','330x95x70','4 modules','Draft'];
+  const csv=[cols,sample].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'})); a.download='vizir-import-template.csv'; a.click();
+  toast('Template downloaded');
+}
+
+/* ---- Add from URL (web clipper, simulated) ---- */
+function openUrlModal(sn){
+  openModal(`<div class="modal-head"><h3>Add from URL</h3><button class="icon-btn" onclick="closeModal()">✕</button></div>
+  <div class="modal-body">
+    <p style="color:var(--muted);font-size:12.5px;margin-bottom:4px">Paste any product page — Vizir clips the name, brand and supplier into a spec for you to review. <i>(Simulated in prototype; production version reads the page.)</i></p>
+    <label>Product URL</label><input id="mUrl" placeholder="https://www.vincentsheppard.com/frida-lounge-chair">
+  </div>
+  <div class="modal-foot"><button class="btn-ghost" onclick="closeModal()">Cancel</button><button class="btn-accent" onclick="clipFromUrl('${sn}')">✦ Clip product</button></div>`);
+}
+function clipFromUrl(sn){
+  const u=$('mUrl').value.trim(); if(!u){ toast('Paste a product URL'); return; }
+  let host='Supplier', name='Clipped Product';
+  try{
+    const url=new URL(u.startsWith('http')?u:'https://'+u);
+    host=url.hostname.replace(/^www\./,'').split('.')[0];
+    host=host.charAt(0).toUpperCase()+host.slice(1);
+    const seg=(url.pathname.split('/').filter(Boolean).pop()||'').replace(/\.\w+$/,'');
+    if(seg) name=seg.replace(/[-_]+/g,' ').replace(/\b\w/g,m=>m.toUpperCase());
+  }catch(e){}
+  closeModal();
+  openDrawer(null,'item',sn,{name, brand:host, supplier:host, url:u.startsWith('http')?u:'https://'+u, note:'Clipped from web — verify specs & price'});
+}
+
+/* ---- Product from library picker ---- */
+function openLibraryPicker(sn){
+  openModal(`<div class="modal-head"><h3>Product from library</h3><button class="icon-btn" onclick="closeModal()">✕</button></div>
+  <div class="modal-body" style="max-height:56vh;overflow:auto">
+    ${DB.library.map(L=>`<div class="detect-item" style="margin-bottom:8px">
+      ${swatch(L.cat)}
+      <div style="flex:1"><div class="di-name">${L.name}</div>
+      <div class="di-cat">${L.brand||''}${L.sku?' · '+L.sku:''} · ${L.supplier} · trade ${fmt(L.cost)}</div></div>
+      <button class="btn-accent btn-sm" onclick="addFromLibrary('${L.id}','${sn}')">Add</button></div>`).join('')
+      || '<div class="empty">Library is empty — save products from your schedules.</div>'}
+  </div>`);
+}
+function addFromLibrary(lid,sn){
+  const L=DB.library.find(x=>x.id===lid);
+  const p=projById(curProjectId); const room=curRoom();
+  if(!room){ toast('Open a room first'); return; }
+  const {id,...rest}=L;
+  room.items.push({...rest, id:uid('i'), status:'Draft', qty:1, section:sn||rest.section, customSpecs:[...(L.customSpecs||[])], images:[...(L.images||[])]});
+  closeModal(); renderProjectDetail(); toast(L.name+' added from library');
+}
+
+/* ================= LIBRARY ================= */
+function renderLibrary(){
+  const rows=DB.library.map(L=>({...L, uses:[], lib:true}));
+  DB.projects.forEach(p=>roomsOf(p).forEach(r=>r.items.forEach(i=>{
+    const k=rows.find(x=>x.name===i.name && x.supplier===i.supplier);
+    if(k){ if(!k.uses.includes(p.name)) k.uses.push(p.name); }
+    else rows.push({...i, uses:[p.name], lib:false});
+  })));
+  $('libBody').innerHTML = rows.map(i=>`<tr ${i.lib?`onclick="openDrawer('${i.id}','library')" style="cursor:pointer"`:''}>
+    <td><div class="item-cell">${thumb(i)}<div><div class="item-name">${i.name}</div><div class="item-sub">${dimsOf(i)}</div></div></div></td>
+    <td class="micro"><b>${i.brand||'—'}</b>${i.sku?`<br>${i.sku}`:''}</td>
+    <td>${i.cat}</td><td>${i.supplier||'—'}</td>
+    <td class="num-cell cost-cell" style="text-align:right">${fmt(i.cost)}</td>
+    <td class="num-cell" style="text-align:right">${i.rrp?fmt(i.rrp):'—'}</td>
+    <td class="item-sub">${i.uses.length?i.uses.join(', '):'Library'}</td></tr>`).join('');
+}
+
+/* ================= PINBOARDS ================= */
+function renderBoards(){
+  const sel=$('boardProject');
+  if(sel.dataset.filled!=='1'){ sel.innerHTML=DB.projects.map(p=>`<option value="${p.id}">${p.name}</option>`).join(''); sel.dataset.filled='1'; }
+  const pid=sel.value||DB.projects[0].id;
+  const secs=BOARDS[pid]||(BOARDS[pid]=[{name:'Concept',images:[]}]);
+  $('boardWrap').innerHTML = secs.map((s,si)=>`<div class="board-sec">
+    <div class="board-sec-title">${s.name}</div>
+    <div class="board-grid" ondragover="dragOn(event)" ondragleave="dragOff(event)" ondrop="dropBoard(event,'${pid}',${si})">
+      ${s.images.map((im,ii)=>`<div class="board-img" onclick="editBoardImg('${pid}',${si},${ii})">
+        <img src="${im.src}"><div class="bi-note">${im.note||'Add note…'}</div></div>`).join('')}
+      <div class="board-add" onclick="boardUpload('${pid}',${si})">＋<br>Add images</div>
+    </div></div>`).join('');
+}
+function boardUpload(pid,si){
+  const inp=$('boardFile');
+  inp.onchange=e=>{
+    [...e.target.files].forEach(async f=>{
+      if(!f.type || !f.type.startsWith('image/')) return;
+      const url=await uploadImage(f);
+      BOARDS[pid][si].images.push({src:url, note:f.name.replace(/\.\w+$/,'')}); renderBoards(); scheduleSave();
+    });
+    inp.value='';
+  };
+  inp.click();
+}
+function editBoardImg(pid,si,ii){
+  const im=BOARDS[pid][si].images[ii];
+  openModal(`<div class="modal-head"><h3>Edit image</h3><button class="icon-btn" onclick="closeModal()">✕</button></div>
+  <div class="modal-body">
+    <img src="${im.src}" style="width:100%;border-radius:9px;max-height:260px;object-fit:cover">
+    <label>Notes</label><textarea id="mBiNote" rows="2">${im.note||''}</textarea>
+    <label>Link</label><input id="mBiLink" value="${im.link||''}" placeholder="https://">
+  </div>
+  <div class="modal-foot" style="justify-content:space-between">
+    <button class="btn-ghost" onclick="BOARDS['${pid}'][${si}].images.splice(${ii},1);closeModal();renderBoards();toast('Image archived')">Archive</button>
+    <div style="display:flex;gap:10px"><button class="btn-ghost" onclick="closeModal()">Cancel</button>
+    <button class="btn-accent" onclick="(function(){const im=BOARDS['${pid}'][${si}].images[${ii}];im.note=$('mBiNote').value;im.link=$('mBiLink').value;closeModal();renderBoards();toast('Image saved')})()">Save changes</button></div>
+  </div>`);
+}
+function addBoardSection(){
+  const n=prompt('Section name (e.g. Concept, Details, Materials & Finishes):',''); if(!n) return;
+  const pid=$('boardProject').value;
+  (BOARDS[pid]=BOARDS[pid]||[]).push({name:n.trim(), images:[]}); scheduleSave();
+  renderBoards();
+}
+
+/* ================= CLIENTS & PRICING ================= */
+function renderClients(){
+  $('clientRows').innerHTML = DB.clients.map(c=>{
+    if(!c.accessCode && !c.access_code) c.accessCode=Math.random().toString(36).slice(2,8);
+    const projs=DB.projects.filter(p=>p.clientId===c.id);
+    const val=projs.reduce((s,p)=>s+allItems(p).reduce((a,i)=>a+clientPrice(i,p),0),0);
+    const ini=c.name.split(' ').map(w=>w[0]).slice(0,2).join('');
+    return `<div class="client-row">
+      <div style="display:flex;align-items:center"><span class="avatar">${ini}</span><div><div style="font-weight:600">${c.name}</div><div class="item-sub">${projs.map(p=>p.name).join(', ')||'No projects'}</div></div></div>
+      <div class="cred-box">${c.email||'—'}<br>code: ${c.accessCode||c.access_code||'—'}</div>
+      <div class="markup-input"><input type="number" value="${c.markup}" min="0" max="300" onchange="setMarkup('${c.id}',this.value)"><span>%</span></div>
+      <div>${projs.length}</div>
+      <div style="text-align:right;font-weight:600">${fmt(val)}</div>
+      <div style="text-align:right"><button class="btn-ghost btn-sm" onclick="openClientModal('${c.id}')">✎ Edit</button></div>
+    </div>`;
+  }).join('');
+}
+function setMarkup(cid,v){ const c=DB.clients.find(c=>c.id===cid); c.markup=Math.max(0,parseFloat(v)||0); renderClients(); toast(`Markup for ${c.name} set to +${c.markup}% — portal prices updated live`); }
+
+/* ================= MODALS ================= */
+function openModal(html){ $('modalBox').innerHTML=html; $('modalBack').classList.remove('hidden'); }
+function closeModal(){ $('modalBack').classList.add('hidden'); }
+$('modalBack').addEventListener('click',e=>{ if(e.target.id==='modalBack') closeModal(); });
+
+function openProjectModal(){
+  openModal(`<div class="modal-head"><h3>New project</h3><button class="icon-btn" onclick="closeModal()">✕</button></div>
+  <div class="modal-body">
+    <label>Project name</label><input id="mProjName" placeholder="Villa Horizon">
+    <div class="form-row"><div><label>Type</label><select id="mProjType"><option>Villa</option><option>Apartment</option><option>Building</option><option>Penthouse</option><option>Hotel</option></select></div>
+    <div><label>Client</label><select id="mProjClient">${DB.clients.map(c=>`<option value="${c.id}">${c.name}</option>`).join('')}</select></div></div>
+    <label>Rooms on the ground floor (comma separated)</label><input id="mProjRooms" placeholder="Living Room, Kitchen, Master Bedroom"><div class="micro" style="margin-top:5px">More floors can be added inside the project.</div>
+  </div>
+  <div class="modal-foot"><button class="btn-ghost" onclick="closeModal()">Cancel</button><button class="btn-accent" onclick="createProject()">Create project</button></div>`);
+}
+function createProject(){
+  const name=$('mProjName').value.trim(); if(!name){ toast('Give the project a name'); return; }
+  const covers=['linear-gradient(135deg,#5C6B57,#2F3B33)','linear-gradient(135deg,#9A6B4F,#5C4030)','linear-gradient(135deg,#3C4A57,#1E2730)','linear-gradient(135deg,#8A6E8A,#4A3B4E)'];
+  const roomNames=($('mProjRooms').value||'Main Room').split(',').map(s=>s.trim()).filter(Boolean);
+  const floor={id:uid('f'), name:'Ground Floor', plans:[], rooms:roomNames.map(n=>({id:uid('r'),name:n,items:[]}))};
+  const p={id:uid('p'), name, type:$('mProjType').value, clientId:$('mProjClient').value, cover:covers[DB.projects.length%covers.length], floors:[floor]};
+  DB.projects.push(p); closeModal(); openProject(p.id); toast('Project created');
+}
+function openRoomModal(){
+  openModal(`<div class="modal-head"><h3>Add room</h3><button class="icon-btn" onclick="closeModal()">✕</button></div>
+  <div class="modal-body"><label>Room name</label><input id="mRoomName" placeholder="Dining Room"></div>
+  <div class="modal-foot"><button class="btn-ghost" onclick="closeModal()">Cancel</button><button class="btn-accent" onclick="createRoom()">Add room</button></div>`);
+}
+function createRoom(){
+  const n=$('mRoomName').value.trim(); if(!n) return;
+  const f=curFloor(); if(!f){ toast('Add a floor first'); return; }
+  const r={id:uid('r'),name:n,items:[]};
+  f.rooms.push(r); curRoomId=r.id; closeModal(); renderProjectDetail(); scheduleSave();
+}
+function openClientModal(cid){
+  const c = cid ? DB.clients.find(x=>x.id===cid) : null;
+  const esc = v => String(v==null?'':v).replace(/"/g,'&quot;');
+  openModal(`<div class="modal-head"><h3>${c?'Edit client':'New client'}</h3><button class="icon-btn" onclick="closeModal()">✕</button></div>
+  <div class="modal-body">
+    <label>Client name</label><input id="mCName" placeholder="Client or company name" value="${c?esc(c.name):''}">
+    <label>Email (portal login)</label><input id="mCEmail" placeholder="client@email.com" value="${c?esc(c.email):''}">
+    <div class="form-row">
+      <div><label>Access code</label><input id="mCAccess" value="${c?esc(c.accessCode||c.access_code||''):Math.random().toString(36).slice(2,8)}"></div>
+      <div><label>Default markup %</label><input id="mCMk" type="number" value="${c?c.markup:30}"></div>
+    </div>
+    ${c?`<p style="color:var(--muted);font-size:11.5px;margin-top:14px">Each client gets a private link + this access code to view and approve their project. Changing the markup updates every client-facing price.</p>`:''}
+  </div>
+  <div class="modal-foot" style="justify-content:space-between">
+    <div>${c?`<button class="btn-ghost btn-sm" style="color:var(--red)" onclick="deleteClient('${c.id}')">Delete client</button>`:''}</div>
+    <div style="display:flex;gap:10px">
+      <button class="btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn-accent" onclick="${c?`saveClient('${c.id}')`:'createClient()'}">${c?'Save changes':'Create client'}</button>
+    </div>
+  </div>`);
+}
+function createClient(){
+  const n=$('mCName').value.trim(); if(!n){ toast('Give the client a name'); return; }
+  DB.clients.push({id:uid('c'), name:n, email:$('mCEmail').value||('client'+idSeq+'@mail.com'), accessCode:($('mCAccess').value||Math.random().toString(36).slice(2,8)), markup:parseFloat($('mCMk').value)||30});
+  closeModal(); renderClients(); toast('Client created — portal credentials ready');
+}
+function saveClient(cid){
+  const c=DB.clients.find(x=>x.id===cid); if(!c) return;
+  const n=$('mCName').value.trim(); if(!n){ toast('Client needs a name'); return; }
+  const email=$('mCEmail').value.trim();
+  if(email && DB.clients.some(x=>x.id!==cid && x.email.toLowerCase()===email.toLowerCase())){ toast('Another client already uses that email'); return; }
+  c.name=n;
+  c.email=email||c.email;
+  c.accessCode=$('mCAccess').value.trim()||c.accessCode||c.access_code;
+  c.markup=Math.max(0,parseFloat($('mCMk').value)||0);
+  closeModal(); renderClients();
+  if(curProjectId){ const p=projById(curProjectId); if(p && p.clientId===cid && !$('view-project').classList.contains('hidden')) renderProjectDetail(); }
+  toast(c.name+' updated — portal prices refreshed');
+}
+function deleteClient(cid){
+  const c=DB.clients.find(x=>x.id===cid); if(!c) return;
+  const projs=DB.projects.filter(p=>p.clientId===cid);
+  if(projs.length){ toast('Reassign or remove '+c.name+'\u2019s '+projs.length+' project(s) first'); return; }
+  if(!confirm('Delete '+c.name+'? This removes their portal access.')) return;
+  DB.clients=DB.clients.filter(x=>x.id!==cid);
+  closeModal(); renderClients(); toast(c.name+' deleted');
+}
+
+/* ================= PRODUCT DRAWER (Custom Product editor) ================= */
+let drawer={open:false, mode:'item', iid:null, tab:'summary', draft:null, targetSection:null};
+function openDrawer(iid, mode, section, preset){
+  mode=mode||'item';
+  drawer={open:true, mode, iid:iid||null, tab:'summary', targetSection:section||null, draft:null};
+  if(iid){
+    const src = mode==='library' ? DB.library.find(x=>x.id===iid) : (findItem(iid)||{}).i;
+    if(!src) return;
+    drawer.draft={taxable:true, ...src, customSpecs:(src.customSpecs||[]).map(s=>({...s})), images:[...(src.images||[])]};
+  } else {
+    drawer.draft={name:'', cat:'Furniture', section:section||'', brand:'', sku:'', supplier:'', qty:1, cost:'', rrp:'',
+      lead:'', url:'', desc:'', details:'', colour:'', finish:'', material:'', w:'', l:'', h:'', d:'',
+      note:'', status:'Draft', taxable:true, markupOverride:null, priceOverride:null, customSpecs:[], images:[], ...(preset||{})};
+  }
+  $('drawerBack').classList.remove('hidden'); $('drawerEl').classList.remove('hidden');
+  renderDrawer();
+}
+function closeDrawer(){ $('drawerBack').classList.add('hidden'); $('drawerEl').classList.add('hidden'); drawer.open=false; }
+function dset(k,v){ drawer.draft[k]=v; }
+function dTab(t){ drawer.tab=t; renderDrawer(); }
+function dIn(k,ph,type){ const v=drawer.draft[k]; return `<input type="${type||'text'}" value="${v==null?'':String(v).replace(/"/g,'&quot;')}" placeholder="${ph||''}" oninput="dset('${k}',this.value)">`; }
+
+function renderDrawer(){
+  const d=drawer.draft, isLib=drawer.mode==='library';
+  const tabs=isLib?['summary','financial']:['summary','financial','approvals'];
+  const tabLbl={summary:'Summary',financial:'Financial',approvals:'Approvals'};
+  $('drawerEl').innerHTML=`
+  <div class="drawer-head">
+    <h3>${d.name||(isLib?'New library product':'Custom Product')}</h3>
+    ${!isLib?`<span class="tag ${d.status.toLowerCase()}">${d.status}</span>`:''}
+    <span style="font-size:10.5px;color:var(--muted);border:1px solid var(--line);border-radius:5px;padding:2px 6px">esc</span>
+    <button class="icon-btn" onclick="closeDrawer()">✕</button>
+  </div>
+  <div class="drawer-tabs">${tabs.map(t=>`<button class="drawer-tab ${drawer.tab===t?'active':''}" onclick="dTab('${t}')">${tabLbl[t]}</button>`).join('')}</div>
+  <div class="drawer-body">${drawer.tab==='summary'?drawerSummary():drawer.tab==='financial'?drawerFinancial():drawerApprovals()}</div>
+  <div class="drawer-foot">
+    <div style="display:flex;gap:8px">
+      <button class="btn-ghost btn-sm" onclick="toast('Spec sheet PDF generated (simulated)')">⎙ PDF</button>
+      ${!isLib?`<button class="btn-ghost btn-sm" onclick="saveToLibrary()">▤ Save to library</button>`:''}
+      ${drawer.iid&&!isLib?`<button class="btn-ghost btn-sm" style="color:var(--red)" onclick="delItem(drawer.iid);closeDrawer()">Delete</button>`:''}
+    </div>
+    <div style="display:flex;gap:10px;align-items:center">
+      <span style="color:var(--muted);font-size:12px">${drawer.iid?'Saved':''}</span>
+      <button class="btn-ghost" onclick="closeDrawer()">Cancel</button>
+      <button class="btn-primary" style="width:auto;margin:0;padding:9px 18px" onclick="saveDrawer()">${drawer.iid?'Done':'Add to schedule'}</button>
+    </div>
+  </div>`;
+  if(drawer.tab==='financial' && !isLib) updFin();
+}
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    if(!$('lightboxBack').classList.contains('hidden')) closeLightbox();
+    else if(drawer.open) closeDrawer();
+    else if(!$('modalBack').classList.contains('hidden')) closeModal();
+  }
+  if((e.metaKey||e.ctrlKey)&&(e.key==='n'||e.key==='N')){
+    if(session&&session.role==='designer'&&!$('view-project').classList.contains('hidden')&&!drawer.open){
+      e.preventDefault(); openDrawer();
+    }
+  }
+});
+function drawerSummary(){
+  const d=drawer.draft;
+  return `
+  <div class="img-slots">
+    ${d.images.map((src,ix)=>`<div class="img-slot" title="Click to remove" onclick="drawer.draft.images.splice(${ix},1);renderDrawer()"><img src="${src}"></div>`).join('')}
+    ${d.images.length<4?`<div class="img-slot" onclick="drawerAddImage()">＋<br>Add image</div>`:''}
+  </div>
+  <label>Product name</label>${dIn('name','Enter product name')}
+  <div class="spec2">
+    <div><label>Product description</label>${dIn('desc','Armchair')}</div>
+    <div><label>Product details</label>${dIn('details','SEE DRAWINGS FOR LOCATION')}</div>
+    <div><label>Brand</label>${dIn('brand','Brand')}</div>
+    <div><label>Qty</label>${dIn('qty','1','number')}</div>
+    <div><label>SKU</label>${dIn('sku','SKU')}</div>
+    <div><label>Lead time</label>${dIn('lead','6–8 weeks')}</div>
+  </div>
+  <label>Product URL</label>${dIn('url','https://…')}
+  <label>Supplier</label>${dIn('supplier','Supplier')}
+  <label>Section</label>${dIn('section','Seating, Tables, Wall Lights…')}
+  <div class="sec-title">Product specifications</div>
+  <div class="spec2">
+    <div><label>Height (mm)</label>${dIn('h','Height','number')}</div>
+    <div><label>Depth (mm)</label>${dIn('d','Depth','number')}</div>
+    <div><label>Width (mm)</label>${dIn('w','Width','number')}</div>
+    <div><label>Length (mm)</label>${dIn('l','Length','number')}</div>
+    <div><label>Colour</label>${dIn('colour','Colour')}</div>
+    <div><label>Finish</label>${dIn('finish','As Shown')}</div>
+    <div><label>Material</label>${dIn('material','Material')}</div>
+    <div><label>Product category</label>
+      <select onchange="dset('cat',this.value)">${CATS.map(c=>`<option ${d.cat===c?'selected':''}>${c}</option>`).join('')}</select></div>
+  </div>
+  <div class="sec-title">Custom specs</div>
+  ${d.customSpecs.map((s,ix)=>`<div class="cspec-row">
+    <input value="${(s.k||'').replace(/"/g,'&quot;')}" placeholder="Spec" oninput="drawer.draft.customSpecs[${ix}].k=this.value">
+    <input value="${(s.v||'').replace(/"/g,'&quot;')}" placeholder="Value" oninput="drawer.draft.customSpecs[${ix}].v=this.value">
+    <button class="icon-btn" onclick="drawer.draft.customSpecs.splice(${ix},1);renderDrawer()">✕</button></div>`).join('')}
+  <button class="btn-ghost btn-sm" style="margin-top:8px" onclick="drawer.draft.customSpecs.push({k:'',v:''});renderDrawer()">＋ Add spec</button>
+  <div class="sec-title">Notes</div>
+  <textarea rows="3" placeholder="Important information — visible to the client…" oninput="dset('note',this.value)">${d.note||''}</textarea>
+  <div class="sec-title">Product attachments</div>
+  <div class="img-slot" style="aspect-ratio:auto;padding:18px" onclick="toast('Attachment upload (simulated in prototype)')">⇪ Upload files — drag & drop or click</div>`;
+}
+function drawerFinancial(){
+  const d=drawer.draft, isLib=drawer.mode==='library';
+  const defMk=clientOf(projById(curProjectId)||DB.projects[0]).markup;
+  return `
+  <div class="spec2">
+    <div><label>Trade price € (your cost)</label>${dIn('cost','0.00','number')}</div>
+    <div><label>RRP €</label>${dIn('rrp','0.00','number')}</div>
+  </div>
+  ${!isLib?`<div class="spec2">
+    <div><label>Markup override % <span style="text-transform:none;font-weight:400">(blank = client default +${defMk}%)</span></label>
+      <input type="number" value="${d.markupOverride??''}" placeholder="${defMk}" oninput="dset('markupOverride',this.value===''?null:parseFloat(this.value));updFin()"></div>
+    <div><label>Manual unit price € <span style="text-transform:none;font-weight:400">(overrides markup)</span></label>
+      <input type="number" value="${d.priceOverride??''}" placeholder="auto" oninput="dset('priceOverride',this.value===''?null:parseFloat(this.value));updFin()"></div>
+  </div>`:''}
+  <div style="display:flex;align-items:center;gap:10px;margin-top:18px">
+    <span class="switch ${d.taxable!==false?'on':''}" onclick="dset('taxable',drawer.draft.taxable===false);this.classList.toggle('on')"></span>
+    <b style="font-size:13px">Product is taxable?</b>
+  </div>
+  ${!isLib?`<div class="fin-preview" id="finPrev"></div>
+  <p style="color:var(--muted);font-size:11.5px;margin-top:10px">The client portal shows only the final client price — trade price, RRP and margin stay internal.</p>`:''}`;
+}
+function updFin(){
+  const el=$('finPrev'); if(!el) return;
+  const d=drawer.draft;
+  const p=projById(curProjectId)||DB.projects[0];
+  const mk = (d.markupOverride!=null && d.markupOverride!=='') ? parseFloat(d.markupOverride) : clientOf(p).markup;
+  const qty=Math.max(1,parseInt(d.qty)||1);
+  const cost=parseFloat(d.cost)||0;
+  const unit = d.priceOverride!=null ? parseFloat(d.priceOverride) : cost*(1+mk/100);
+  el.innerHTML=`<div><span>Markup applied</span><b>${d.priceOverride!=null?'manual price':'+'+mk+'%'}</b></div>
+    <div><span>Client price (unit)</span><b>${fmt(unit)}</b></div>
+    <div><span>Line total (× ${qty})</span><b>${fmt(unit*qty)}</b></div>
+    <div><span>Margin</span><b style="color:var(--olive)">${fmt((unit-cost)*qty)}</b></div>`;
+}
+function drawerApprovals(){
+  const d=drawer.draft;
+  return `
+  <label>Status</label>
+  <select onchange="dset('status',this.value)">${STATUSES.map(s=>`<option ${d.status===s?'selected':''}>${s}</option>`).join('')}</select>
+  <div class="fin-preview" style="margin-top:18px">
+    <div><span>Draft</span><b>internal only</b></div>
+    <div><span>Sent</span><b>visible in client portal, awaiting decision</b></div>
+    <div><span>Approved / Declined</span><b>decided by client, date-stamped</b></div>
+  </div>
+  ${d.clientComment?`<div class="sec-title">Client feedback</div><div class="cp-note" style="color:var(--red)">“${d.clientComment}”</div>`:''}
+  ${d.status==='Sent'?'<p style="color:var(--muted);font-size:12px;margin-top:14px">This item is live in the client portal and awaiting review.</p>':''}`;
+}
+function drawerAddImage(){
+  const inp=$('drawerImgFile');
+  inp.onchange=async e=>{
+    const f=e.target.files[0]; if(!f) return;
+    const url=await uploadImage(f);
+    drawer.draft.images.push(url); renderDrawer(); inp.value='';
+  };
+  inp.click();
+}
+function saveToLibrary(){
+  const d=drawer.draft;
+  if(!d.name){ toast('Name the product first'); return; }
+  const {id,status,clientComment,markupOverride,priceOverride,...rest}=d;
+  DB.library.push({...rest, id:uid('L'), cost:parseFloat(d.cost)||0, rrp:d.rrp?parseFloat(d.rrp):null});
+  toast(d.name+' saved to Product Library');
+}
+function saveDrawer(){
+  const d=drawer.draft;
+  d.name=(d.name||'').trim()||'Untitled product';
+  d.qty=Math.max(1,parseInt(d.qty)||1);
+  d.cost=parseFloat(d.cost)||0;
+  d.rrp=(d.rrp===''||d.rrp==null)?null:parseFloat(d.rrp);
+  d.section=(d.section||'').trim()||null;
+  if(drawer.mode==='library'){
+    if(drawer.iid){ const L=DB.library.find(x=>x.id===drawer.iid); Object.assign(L,d); }
+    else DB.library.push({...d, id:uid('L')});
+    closeDrawer(); renderLibrary(); toast('Product saved to library'); return;
+  }
+  if(drawer.iid){ const f=findItem(drawer.iid); Object.assign(f.i,d); }
+  else{
+    const room=curRoom();
+    if(!room){ toast('Open a project room first'); closeDrawer(); return; }
+    room.items.push({...d, id:uid('i')});
+  }
+  const wasNew=!drawer.iid;
+  closeDrawer(); renderProjectDetail(); toast(wasNew?d.name+' added to schedule':'Product updated');
+}
+
+/* ================= RENDERS / AI TAKEOFF ================= */
+/* In production this calls a vision model (e.g. Claude) on the uploaded render.
+   The prototype simulates the detection pass with a realistic FF&E takeoff. */
+const DETECT_POOL = [
+  {name:'Three-Seat Sofa', cat:'Furniture', section:'Seating', cost:4200, box:[14,52,38,30]},
+  {name:'Coffee Table', cat:'Furniture', section:'Tables', cost:1450, box:[40,68,18,16]},
+  {name:'Lounge Chair', cat:'Furniture', section:'Seating', cost:1850, box:[62,55,16,24]},
+  {name:'Area Rug', cat:'Soft Furnishings', section:'Rugs & Textiles', cost:2300, box:[18,74,55,20]},
+  {name:'Pendant Light', cat:'Lighting', section:'Pendant Lights', cost:680, box:[44,6,12,18]},
+  {name:'Floor Lamp', cat:'Lighting', section:'Lighting', cost:520, box:[80,38,9,34]},
+  {name:'Curtains', cat:'Soft Furnishings', section:'Window Treatments', cost:430, box:[2,8,12,70]},
+  {name:'Wall Finish — Limewash', cat:'Finishes', section:'Wall Finishes', cost:780, box:[20,10,60,28]},
+  {name:'Timber Flooring', cat:'Finishes', section:'Floor Finishes', cost:3900, box:[5,80,90,16]},
+  {name:'Sideboard / Console', cat:'Joinery', section:'Storage', cost:2600, box:[70,46,24,16]},
+  {name:'Wall Art', cat:'Soft Furnishings', section:'Artwork', cost:350, box:[30,16,14,18]},
+  {name:'Side Table', cat:'Furniture', section:'Tables', cost:640, box:[57,62,9,11]},
+];
+let detections=[], renderLoaded=false;
+
+const dz=$('dropzone');
+['dragover','dragenter'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add('drag')}));
+['dragleave','drop'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove('drag')}));
+dz.addEventListener('drop',e=>{ const f=e.dataTransfer.files[0]; if(f) loadRenderFile(f); });
+$('renderFile').addEventListener('change',e=>{ if(e.target.files[0]) loadRenderFile(e.target.files[0]); });
+
+function loadRenderFile(f){
+  const rd=new FileReader();
+  rd.onload=ev=>{ showRender(ev.target.result); };
+  rd.readAsDataURL(f);
+}
+function useSampleRender(){ showRender(sampleRenderURI()); }
+function showRender(src){
+  $('renderUploadWrap').classList.add('hidden');
+  $('renderResultWrap').classList.remove('hidden');
+  $('renderImg').src=src; renderLoaded=true;
+  analyzeRender();
+}
+function resetRender(){
+  $('renderResultWrap').classList.add('hidden');
+  $('renderUploadWrap').classList.remove('hidden');
+  $('renderFile').value=''; detections=[];
+  document.querySelectorAll('.bbox').forEach(b=>b.remove());
+}
+function analyzeRender(){
+  if(!renderLoaded) return;
+  document.querySelectorAll('.bbox').forEach(b=>b.remove());
+  $('detectList').innerHTML='<div class="empty" style="padding:30px">Reading geometry, materials and furnishings…</div>';
+  $('detectTitle').textContent='Analyzing render…';
+  $('detectControls').classList.add('hidden'); $('addDetectedBtn').classList.add('hidden');
+  const scan=document.createElement('div'); scan.className='scanline'; $('renderStage').appendChild(scan);
+  setTimeout(()=>{
+    scan.remove();
+    const n=7+Math.floor(Math.random()*4);
+    const pool=[...DETECT_POOL].sort(()=>Math.random()-.5).slice(0,n);
+    detections=pool.map((d,ix)=>({...d, id:'d'+ix, conf:Math.round(82+Math.random()*16), sel:true,
+      box:d.box.map(v=>Math.max(1,Math.min(95,v+(Math.random()*6-3))))}));
+    renderDetections();
+  },1900);
+}
+function renderDetections(){
+  $('detectTitle').textContent=detections.length+' items detected';
+  $('detectControls').classList.remove('hidden');
+  $('addDetectedBtn').classList.remove('hidden');
+  fillDetProjects();
+  const stage=$('renderStage');
+  detections.forEach(d=>{
+    const b=document.createElement('div'); b.className='bbox'; b.id='bb-'+d.id;
+    b.style.cssText=`left:${d.box[0]}%;top:${d.box[1]}%;width:${d.box[2]}%;height:${d.box[3]}%`;
+    b.innerHTML=`<span class="bbox-label">${d.name} · ${d.conf}%</span>`;
+    b.onmouseenter=()=>hl(d.id,true); b.onmouseleave=()=>hl(d.id,false);
+    stage.appendChild(b);
+  });
+  $('detectList').innerHTML = detections.map(d=>`
+    <div class="detect-item" id="di-${d.id}" onmouseenter="hl('${d.id}',true)" onmouseleave="hl('${d.id}',false)">
+      <input type="checkbox" ${d.sel?'checked':''} onchange="detections.find(x=>x.id==='${d.id}').sel=this.checked">
+      <div class="swatch" style="width:34px;height:34px;background:${CAT_BG[d.cat]||'#EFECE5'}">${CAT_EMOJI[d.cat]||'📦'}</div>
+      <div style="flex:1">
+        <div class="di-name">${d.name}</div>
+        <div class="di-cat">${d.section} · <span class="conf">${d.conf}% confidence</span></div>
+        <div class="conf-bar"><i style="width:${d.conf}%"></i></div>
+      </div>
+      <input class="di-cost" type="number" value="${d.cost}" title="Estimated trade cost €" onchange="detections.find(x=>x.id==='${d.id}').cost=parseFloat(this.value)||0">
+    </div>`).join('');
+}
+function hl(id,on){
+  const b=$('bb-'+id), li=$('di-'+id);
+  if(b) b.classList.toggle('hl',on); if(li) li.classList.toggle('hl',on);
+}
+function fillDetProjects(){
+  const sel=$('detProject');
+  sel.innerHTML=DB.projects.map(p=>`<option value="${p.id}" ${p.id===curProjectId?'selected':''}>${p.name}</option>`).join('');
+  fillDetRooms();
+}
+function fillDetRooms(){
+  const p=projById($('detProject').value)||DB.projects[0];
+  $('detRoom').innerHTML=(p.floors||[]).flatMap(f=>f.rooms.map(r=>`<option value="${r.id}" ${r.id===curRoomId?'selected':''}>${f.name} · ${r.name}</option>`)).join('');
+}
+function addDetectedToSchedule(){
+  const p=projById($('detProject').value);
+  const fr=findRoomFloor(p,$('detRoom').value); const room=fr&&fr.room;
+  if(!room){ toast('Pick a room'); return; }
+  const sel=detections.filter(d=>d.sel);
+  if(!sel.length){ toast('Select at least one detected item'); return; }
+  sel.forEach(d=>room.items.push({id:uid('i'), name:d.name, cat:d.cat, section:d.section, supplier:'To source', qty:1,
+    cost:d.cost, lead:'TBC', status:'Draft', taxable:true, note:'From render takeoff ('+d.conf+'% conf.)'}));
+  toast(sel.length+' items added to '+p.name+' → '+room.name);
+  openProject(p.id, room.id);
+}
+/* Sample render: stylized living-room SVG so the demo works without an upload */
+function sampleRenderURI(){
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760">
+  <defs>
+    <linearGradient id="w" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#D9CFC0"/><stop offset="1" stop-color="#C8BCA9"/></linearGradient>
+    <linearGradient id="f" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#A98B66"/><stop offset="1" stop-color="#8F7250"/></linearGradient>
+    <linearGradient id="win" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E8DFC8"/><stop offset="1" stop-color="#C9B98F"/></linearGradient>
+  </defs>
+  <rect width="1200" height="560" fill="url(#w)"/>
+  <rect y="560" width="1200" height="200" fill="url(#f)"/>
+  <g opacity=".5">${Array.from({length:12},(_,i)=>`<rect x="${i*100}" y="560" width="2" height="200" fill="#7A5F41"/>`).join('')}</g>
+  <rect x="40" y="60" width="150" height="560" fill="#B8AB94" opacity=".8"/>
+  <path d="M40 60 q30 300 0 560 l 50 0 q 25 -260 0 -560 Z" fill="#A89878"/>
+  <rect x="880" y="80" width="240" height="400" fill="url(#win)" stroke="#8F8268" stroke-width="10"/>
+  <line x1="1000" y1="80" x2="1000" y2="480" stroke="#8F8268" stroke-width="8"/>
+  <circle cx="540" cy="120" r="46" fill="#E8C98F" opacity=".9"/><line x1="540" y1="0" x2="540" y2="76" stroke="#6B5B45" stroke-width="5"/>
+  <rect x="350" y="140" width="150" height="110" fill="#EFE6D5" stroke="#9C8C72" stroke-width="6"/>
+  <path d="M365 230 l40 -55 35 35 28 -40 30 60 Z" fill="#7E8C74"/>
+  <ellipse cx="600" cy="660" rx="430" ry="70" fill="#E3D6BE" opacity=".9"/>
+  <g><rect x="200" y="430" width="430" height="140" rx="26" fill="#D9D2C2"/>
+  <rect x="190" y="380" width="450" height="80" rx="24" fill="#E5DECF"/>
+  <rect x="180" y="400" width="50" height="160" rx="16" fill="#CEC5B1"/>
+  <rect x="600" y="400" width="50" height="160" rx="16" fill="#CEC5B1"/></g>
+  <g><ellipse cx="520" cy="630" rx="105" ry="34" fill="#B7A285"/><rect x="430" y="596" width="180" height="22" rx="10" fill="#D8CBB2"/></g>
+  <g><rect x="770" y="470" width="120" height="100" rx="18" fill="#A8B29E"/><rect x="765" y="440" width="130" height="46" rx="18" fill="#B8C2AC"/></g>
+  <g><line x1="960" y1="560" x2="960" y2="300" stroke="#5C534A" stroke-width="6"/><path d="M930 300 h60 l-12 -42 h-36 Z" fill="#E8DDC4"/><ellipse cx="960" cy="566" rx="34" ry="8" fill="#5C534A"/></g>
+  <text x="1130" y="740" font-family="Georgia" font-size="20" fill="#FFFFFF" opacity=".55" text-anchor="end">Sample render — Vizir ID</text>
+  </svg>`;
+  return 'data:image/svg+xml;utf8,'+encodeURIComponent(svg);
+}
+
+/* demo floorplans & hero renders are seeded after migration in the persistence block */
+
+/* ================= PERSISTENCE (localStorage) ================= */
+const STORE_KEY='vizir-id-store-v1';
+function _lighten(obj){
+  // drop only very large embedded image data (keeps all text/structured data)
+  return JSON.parse(JSON.stringify(obj), (k,v)=> (typeof v==='string' && v.startsWith('data:') && v.length>20000) ? '' : v);
+}
+function persist(){
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify({v:1, DB, BOARDS, idSeq})); }
+  catch(e){
+    try{
+      localStorage.setItem(STORE_KEY, JSON.stringify({v:1, DB:_lighten(DB), BOARDS:_lighten(BOARDS), idSeq}));
+      if(!persist._warned){ persist._warned=1; toast('Storage nearly full — some large uploaded images may not be saved'); }
+    }catch(e2){}
+  }
+}
+let _saveT;
+function scheduleSave(){ clearTimeout(_saveT); _saveT=setTimeout(persist, 400); cloudSave(); }
+function restore(){
+  try{
+    const r=JSON.parse(localStorage.getItem(STORE_KEY)||'null');
+    if(r && r.DB && Array.isArray(r.DB.projects)){
+      DB=r.DB; if(r.BOARDS) BOARDS=r.BOARDS; if(typeof r.idSeq==='number') idSeq=r.idSeq;
+      return true;
+    }
+  }catch(e){}
+  return false;
+}
+function resetDemo(){
+  if(!confirm('Reset everything back to the demo sample? This erases your saved clients, projects and uploads on this device.')) return;
+  try{ localStorage.removeItem(STORE_KEY); }catch(e){}
+  location.reload();
+}
+// keep a local cache for the local-demo mode / offline
+window.addEventListener('beforeunload', ()=>{ try{ if(session && session.local) persist(); }catch(e){} });
+// resume an existing cloud session on load
+async function bootstrapAuth(){
+  if(!sb) return;
+  const pp=new URLSearchParams(location.search).get('p');
+  if(pp){ $('loginScreen').classList.add('hidden'); portalToken=pp; showPortalGate(pp); return; }
+  try{ const {data}=await sb.auth.getSession(); if(data && data.session){ session={role:'designer', uid:data.session.user.id}; await loadFromCloud(); enterApp(); } }catch(e){}
+}
+bootstrapAuth();
+
+/* ================= i18n (EN / FR) ================= */
+const FR = {
+  // nav / sidebar
+  'Studio':'Studio','Dashboard':'Tableau de bord','Projects':'Projets','Renders · AI':'Rendus · IA',
+  'Product Library':'Bibliothèque produits','Pinboards':'Planches d’ambiance','Business':'Gestion',
+  'Clients & Pricing':'Clients & Tarifs','Sign out':'Déconnexion','Reset demo':'Réinitialiser',
+  // login
+  'Every room, scheduled. Every price, under control.':'Chaque pièce planifiée. Chaque prix maîtrisé.',
+  'FF&E schedules for villas, buildings and apartments — built from your renders, priced your way, approved by your clients.':'Nomenclatures FF&E pour villas, immeubles et appartements — créées depuis vos rendus, tarifées à votre façon, approuvées par vos clients.',
+  'AI render takeoff':'Analyse IA des rendus','Room-by-room schedules':'Nomenclatures par pièce','Client approvals':'Validations clients',
+  'Welcome back':'Bon retour','Sign in to your studio or client space.':'Connectez-vous à votre studio ou espace client.',
+  'Email':'E-mail','Password':'Mot de passe','Sign in':'Se connecter','Demo accounts':'Comptes de démo',
+  'Invalid credentials. Try a demo account below.':'Identifiants invalides. Essayez un compte de démo ci-dessous.',
+  'Designer — Studio backend':'Designer — Espace studio','Client — Elena Rossi (Villa Azure)':'Client — Elena Rossi (Villa Azure)',
+  // dashboard
+  'Studio overview':'Vue d’ensemble','+ New project':'+ Nouveau projet','Active projects':'Projets actifs',
+  'Specified items':'Articles spécifiés','Portfolio value':'Valeur du portefeuille','Approved value':'Valeur approuvée',
+  'client pricing':'tarifs clients','signed off by clients':'validés par les clients',
+  // projects / detail
+  'All projects':'Tous les projets','Client:':'Client :','Default markup:':'Marge par défaut :',
+  'Renders':'Rendus','Floorplan':'Plan','Rooms':'Pièces','Summary':'Résumé','Financial':'Financier',
+  '+ Room':'+ Pièce','+ Floor':'+ Niveau','+ Add room':'+ Ajouter une pièce','✎ Rename':'✎ Renommer','Delete floor':'Supprimer le niveau',
+  '＋ New Section':'＋ Nouvelle section','＋ Custom Product':'＋ Produit personnalisé','▤ Product from library':'▤ Produit de la bibliothèque','✦ Add from URL':'✦ Ajouter via URL',
+  'Room trade total:':'Total achat (pièce) :','Margin:':'Marge :','Client total:':'Total client :','Section trade:':'Achat section :','Client:':'Client :',
+  'visuals shown to the client — run AI takeoff straight from a render':'visuels montrés au client — lancez l’analyse IA depuis un rendu',
+  '⇪ Add render':'⇪ Ajouter un rendu','3D view, photo, visual…':'Vue 3D, photo, visuel…',
+  '⇪ Upload plan':'⇪ Importer un plan','floor plan, elevation, joinery drawing…':'plan, élévation, plan de menuiserie…',
+  'Add caption…':'Ajouter une légende…','Add note…':'Ajouter une note…','edit':'modifier','hidden from client':'masqué au client',
+  '⋯ More':'⋯ Plus','⎙ Export as PDF':'⎙ Exporter en PDF','⊞ Export as XLS (Excel)':'⊞ Exporter en XLS (Excel)',
+  '✉ Get quotes':'✉ Demander des devis','⇪ Import schedule':'⇪ Importer une nomenclature','⎘ Create purchase order':'⎘ Créer un bon de commande',
+  'New':'Nouveau','Details':'Détails',
+  // table headers
+  'Item':'Article','Brand':'Marque','Dimensions':'Dimensions','Col · Fin · Mat':'Coul · Fin · Mat','Qty':'Qté','Lead time':'Délai',
+  'Supplier':'Fournisseur','Status':'Statut','Trade (unit)':'Achat (unité)','Markup':'Marge','Tax':'TVA','Client (unit)':'Client (unité)','Line total':'Total ligne',
+  // statuses (shown as tags)
+  'Draft':'Brouillon','Sent':'Envoyé','Approved':'Approuvé','Declined':'Refusé',
+  // import dropzone
+  '⊞ Import a schedule':'⊞ Importer une nomenclature',
+  // renders page
+  'AI takeoff':'Analyse IA','Drop a render here':'Déposez un rendu ici',
+  'or click to browse — Vizir reads the image and proposes the furniture, fixtures & finishes for your schedule.':'ou cliquez pour parcourir — Vizir lit l’image et propose le mobilier, les équipements et les finitions pour votre nomenclature.',
+  'Try with a sample render':'Essayer avec un rendu exemple','Analyzing…':'Analyse en cours…','Project':'Projet','Room':'Pièce',
+  'Add selected to schedule':'Ajouter la sélection','↺ New render':'↺ Nouveau rendu','⟳ Re-analyze':'⟳ Ré-analyser',
+  // library
+  'Reusable products':'Produits réutilisables','+ Add Product':'+ Ajouter un produit','Product':'Produit','Brand · SKU':'Marque · Réf',
+  'Category':'Catégorie','Trade':'Achat','RRP':'PVC','Used in':'Utilisé dans',
+  // pinboards
+  'Mood boards & references':'Planches & références','+ New section':'+ Nouvelle section',
+  // clients
+  'Backend pricing control':'Contrôle des tarifs','+ New client':'+ Nouveau client','Portal credentials':'Identifiants portail',
+  'Default markup':'Marge par défaut','Portal value':'Valeur portail','✎ Edit':'✎ Modifier',
+  'Set the markup each client receives. Clients only ever see their final price — costs and margins stay in your backend. Per-item overrides are available inside each schedule.':'Définissez la marge de chaque client. Les clients ne voient que leur prix final — coûts et marges restent dans votre interface. Des ajustements par article sont disponibles dans chaque nomenclature.',
+  // modals
+  'New project':'Nouveau projet','Project name':'Nom du projet','Type':'Type','Client':'Client',
+  'Rooms on the ground floor (comma separated)':'Pièces du rez-de-chaussée (séparées par des virgules)',
+  'More floors can be added inside the project.':'D’autres niveaux peuvent être ajoutés dans le projet.',
+  'Add room':'Ajouter une pièce','Room name':'Nom de la pièce','Add floor':'Ajouter un niveau','Floor name':'Nom du niveau',
+  'New client':'Nouveau client','Edit client':'Modifier le client','Client name':'Nom du client','Email (portal login)':'E-mail (accès portail)',
+  'Portal password':'Mot de passe portail','Default markup %':'Marge par défaut %',
+  'Room render':'Rendu de la pièce','Caption':'Légende','Visible in client portal':'Visible dans le portail client',
+  'Note / revision':'Note / révision','⤢ View full size':'⤢ Voir en grand','Cancel':'Annuler','Save':'Enregistrer','Remove':'Supprimer',
+  'Save changes':'Enregistrer','Create project':'Créer le projet','Create client':'Créer le client','Delete client':'Supprimer le client',
+  'Add from URL':'Ajouter via URL','Product URL':'URL du produit','✦ Clip product':'✦ Importer le produit',
+  'Product from library':'Produit de la bibliothèque','Add':'Ajouter',
+  // import modal
+  'Import schedule':'Importer une nomenclature','First row is a header':'La première ligne est un en-tête',
+  'Use sheet name as Section':'Utiliser le nom de l’onglet comme section','Default status for imported items':'Statut par défaut des articles importés',
+  '⭳ Template CSV':'⭳ Modèle CSV','Import all sheets':'Importer tous les onglets','Sheet':'Onglet','groups each sheet into its own section':'regroupe chaque onglet dans sa propre section',
+  // drawer
+  'Approvals':'Validations','Custom Product':'Produit personnalisé','New library product':'Nouveau produit bibliothèque',
+  '⎙ PDF':'⎙ PDF','▤ Save to library':'▤ Enregistrer en bibliothèque','Delete':'Supprimer','Done':'Terminé','Add to schedule':'Ajouter à la nomenclature','Saved':'Enregistré',
+  'Product name':'Nom du produit','Product description':'Description du produit','Product details':'Détails du produit',
+  'Product URL':'URL du produit','Section':'Section','Product specifications':'Spécifications produit',
+  'Height (mm)':'Hauteur (mm)','Depth (mm)':'Profondeur (mm)','Width (mm)':'Largeur (mm)','Length (mm)':'Longueur (mm)',
+  'Colour':'Couleur','Finish':'Finition','Material':'Matériau','Product category':'Catégorie produit',
+  'Custom specs':'Spécifications sur mesure','＋ Add spec':'＋ Ajouter une spécification','Notes':'Notes','Notes / Description':'Notes / Description',
+  'Product attachments':'Pièces jointes produit','Trade price € (your cost)':'Prix d’achat (votre coût)','RRP €':'PVC',
+  'Item / Product':'Article / Produit','SKU / Ref':'Réf / SKU','Trade / cost':'Achat / coût','Item / Product ':'Article / Produit',
+  // portal
+  'CLIENT SPACE':'ESPACE CLIENT','Total investment':'Investissement total','Approved selections':'Sélections approuvées',
+  'Awaiting your review':'En attente de votre avis','tap approve or decline below':'approuvez ou refusez ci-dessous',
+  '✓ Approve':'✓ Approuver','Decline':'Refuser','Nothing to review yet':'Rien à examiner pour l’instant',
+  'Your designer will share selections here.':'Votre designer partagera les sélections ici.','No project yet':'Aucun projet pour l’instant',
+  'Prepared by Atelier Doro. Review each selection and approve directly — your designer is notified instantly.':'Préparé par Atelier Doro. Examinez chaque sélection et approuvez directement — votre designer est notifié instantanément.',
+  // categories (display only — data stays English)
+  'Furniture':'Mobilier','Lighting':'Éclairage','Fixtures':'Robinetterie','Finishes':'Finitions','Joinery':'Menuiserie','Soft Furnishings':'Textiles','Appliances':'Électroménager','Sanitaryware':'Sanitaires',
+  // toasts
+  'Project created':'Projet créé','Render added':'Rendu ajouté','Plan added':'Plan ajouté','Render saved':'Rendu enregistré','Plan saved':'Plan enregistré','Render removed':'Rendu supprimé','Plan removed':'Plan supprimé',
+  'Status updated':'Statut mis à jour','Sent to client portal':'Envoyé au portail client','Product updated':'Produit mis à jour','Floor deleted':'Niveau supprimé','Template downloaded':'Modèle téléchargé',
+  'A project needs at least one floor':'Un projet doit avoir au moins un niveau','Client created — portal credentials ready':'Client créé — identifiants du portail prêts','Open a project room first':'Ouvrez d’abord une pièce du projet',
+  'Floor added — now add rooms':'Niveau ajouté — ajoutez maintenant des pièces','Drop an .xlsx or .csv file':'Déposez un fichier .xlsx ou .csv','Map the Item / Product column first':'Associez d’abord la colonne Article / Produit',
+};
+const REV = {}; for(const k in FR){ if(!(FR[k] in REV)) REV[FR[k]]=k; }
+const FR_PAT = [
+  [/^Good day, (.+)$/, 'Bonjour, $1'],
+  [/^(\d[\d  .,]*) awaiting approval$/, '$1 en attente'],
+  [/^(\d+) floors? · (\d+) rooms · (\d+) items$/, '$1 niveau(x) · $2 pièces · $3 articles'],
+  [/^(\d+) rooms · (\d+) items$/, '$1 pièces · $2 articles'],
+  [/^rooms on (.+)$/, 'pièces de $1'],
+  [/^plans for (.+) — shared with the client$/, 'plans de $1 — partagés avec le client'],
+  [/^(\d+) selections · (.+)$/, '$1 sélections · $2'],
+  [/^across (\d+) selections$/, 'sur $1 sélections'],
+  [/^(.+) confirmed$/, '$1 confirmé'],
+  [/^(\d+) items detected$/, '$1 articles détectés'],
+  [/^Qty (\d+)(.*)$/, 'Qté $1$2'],
+  [/^(\d+) items imported into (.+)$/, '$1 articles importés dans $2'],
+  [/^(\d+) items imported into (.+) \((\d+) sheets\)$/, '$1 articles importés dans $2 ($3 onglets)'],
+  [/^(\d+) items added to (.+)$/, '$1 articles ajoutés à $2'],
+  [/^(.+) added from library$/, '$1 ajouté depuis la bibliothèque'],
+  [/^(.+) updated — portal prices refreshed$/, '$1 mis à jour — prix du portail actualisés'],
+  [/^Markup for (.+) set to (.+) — portal prices updated live$/, 'Marge de $1 réglée à $2 — prix du portail mis à jour'],
+];
+let _i18nBusy=false;
+function _tr(key){
+  if(!key) return null;
+  const dict = LANG==='fr'?FR:REV;
+  if(dict[key]!==undefined && dict[key]!==key) return dict[key];
+  if(LANG==='fr'){ for(const [re,r] of FR_PAT){ if(re.test(key)) return key.replace(re,r); } }
+  return null;
+}
+function translateNode(node){
+  if(!node) return;
+  if(node.nodeType===3){ const raw=node.nodeValue, key=raw.trim(); if(!key) return; const t=_tr(key); if(t!=null && t!==key) node.nodeValue=raw.replace(key,t); return; }
+  if(node.nodeType!==1) return;
+  const tag=node.tagName;
+  if(tag==='SCRIPT'||tag==='STYLE'||tag==='SELECT'||tag==='OPTION'||tag==='TEXTAREA') return;
+  ['placeholder','title'].forEach(a=>{ if(node.hasAttribute(a)){ const v=node.getAttribute(a), key=v.trim(); const t=_tr(key); if(t!=null && t!==key) node.setAttribute(a, v.replace(key,t)); } });
+  for(let c=node.firstChild;c;c=c.nextSibling) translateNode(c);
+}
+function applyLang(){ _i18nBusy=true; translateNode(document.body); _i18nBusy=false; }
+function refreshAll(){
+  if(!$('app').classList.contains('hidden')){
+    const active=document.querySelector('.nav-item.active');
+    if(active){ const v=active.dataset.view;
+      if(v==='dashboard')renderDashboard(); else if(v==='projects')renderProjects();
+      else if(v==='library')renderLibrary(); else if(v==='boards')renderBoards(); else if(v==='clients')renderClients(); }
+    if(!$('view-project').classList.contains('hidden')) renderProjectDetail();
+  }
+  if(!$('clientPortal').classList.contains('hidden') && session && session.clientId){ const c=DB.clients.find(x=>x.id===session.clientId); if(c) renderPortal(c); }
+}
+function updateToggles(){
+  document.querySelectorAll('.seg .opt').forEach(o=>{
+    const set=o.parentElement.dataset.set, v=o.dataset.v, cur=set==='lang'?LANG:CURRENCY;
+    o.classList.toggle('on', v===cur);
+  });
+}
+function setLang(l){ LANG=l; try{localStorage.setItem('vizir-lang',l);}catch(e){} document.documentElement.lang=l; refreshAll(); applyLang(); updateToggles(); }
+function setCurrency(c){ CURRENCY=c; try{localStorage.setItem('vizir-cur',c);}catch(e){} refreshAll(); applyLang(); updateToggles(); }
+const _i18nObs=new MutationObserver(muts=>{
+  if(LANG!=='fr'||_i18nBusy) return;
+  _i18nBusy=true;
+  for(const m of muts){ if(m.addedNodes) m.addedNodes.forEach(n=>translateNode(n)); }
+  _i18nBusy=false;
+});
+_i18nObs.observe(document.body,{childList:true,subtree:true});
+document.documentElement.lang=LANG; updateToggles(); if(LANG==='fr') applyLang();
+
+/* ================= CLIENT PORTAL ================= */
+function enterPortal(client){
+  $('loginScreen').classList.add('hidden');
+  $('clientPortal').classList.remove('hidden');
+  renderPortal(client);
+}
+function renderPortal(client){
+  const projs=DB.projects.filter(p=>p.clientId===client.id);
+  const p=projs[0]; // prototype: first project per client
+  $('cpWho').textContent=client.name;
+  if(!p){ $('cpProject').textContent='No project yet'; $('cpRooms').innerHTML=''; $('cpStats').innerHTML=''; return; }
+  $('cpType').textContent=p.type+' · prepared for '+client.name;
+  $('cpProject').textContent=p.name;
+  // Clients only see items that were sent / decided — never drafts, never costs.
+  const visible=r=>r.items.filter(i=>i.status!=='Draft');
+  const vis=roomsOf(p).flatMap(visible);
+  const total=vis.reduce((a,i)=>a+clientPrice(i,p),0);
+  const appr=vis.filter(i=>i.status==='Approved');
+  const apprVal=appr.reduce((a,i)=>a+clientPrice(i,p),0);
+  $('cpStats').innerHTML=[
+    [fmt(total),'Total investment','across '+vis.length+' selections'],
+    [appr.length+' / '+vis.length,'Approved selections',fmt(apprVal)+' confirmed'],
+    [vis.filter(i=>i.status==='Sent').length,'Awaiting your review','tap approve or decline below'],
+  ].map(([n,l,d])=>`<div class="stat"><div class="num">${n}</div><div class="lbl">${l}</div><div class="delta" style="color:var(--muted)">${d}</div></div>`).join('');
+  $('cpRooms').innerHTML = p.floors.map(f=>{
+    const fplans=(f.plans||[]).filter(pl=>pl.shared!==false);
+    const roomsHtml = f.rooms.map(r=>{
+      const items=visible(r);
+      const heroes=(r.renders||[]).filter(h=>h.shared!==false);
+      if(!items.length && !heroes.length) return '';
+      const rt=items.reduce((a,i)=>a+clientPrice(i,p),0);
+      return `<div class="cp-room">
+        <div class="cp-room-head"><h2>${r.name}</h2><div class="rt">${items.length} selections · <b style="color:var(--ink)">${fmt(rt)}</b></div></div>
+        ${heroes.length?`<div class="cp-heroes">${heroes.map(h=>`<div class="hero-card" onclick="cpView('${r.id}','renders',${(r.renders||[]).indexOf(h)})">
+          <img src="${h.src}"><div class="hero-cap">${h.note||''}</div></div>`).join('')}</div>`:''}
+        ${items.length?`<div class="card">${items.map(i=>cpItemRow(i,p)).join('')}</div>`:''}
+      </div>`;
+    }).join('');
+    if(!fplans.length && !roomsHtml.trim()) return '';
+    return `<div class="cp-floor">
+      <div class="cp-floor-title">${f.name}</div>
+      ${fplans.length?`<div class="cp-plans">${fplans.map(pl=>`<div class="plan-card" onclick="cpView('${f.id}','plans',${(f.plans||[]).indexOf(pl)})">
+        <img src="${pl.src}"><div class="bi-note">${pl.note||''}</div></div>`).join('')}</div>`:''}
+      ${roomsHtml}
+    </div>`;
+  }).join('') || '<div class="empty card"><div class="big">Nothing to review yet</div>Your designer will share selections here.</div>';
+}
+function cpView(id,kind,ix){
+  for(const p of DB.projects){
+    if(kind==='plans'){
+      const f=(p.floors||[]).find(x=>x.id===id);
+      if(f){ const it=(f.plans||[])[ix]; if(it) viewImage(it.src, f.name+(it.note?' — '+it.note:'')); return; }
+    } else {
+      const r=roomsOf(p).find(x=>x.id===id);
+      if(r){ const it=(r[kind]||[])[ix]; if(it) viewImage(it.src, r.name+(it.note?' — '+it.note:'')); return; }
+    }
+  }
+}
+function cpItemRow(i,p){
+  return `<div class="cp-item">
+    <div>${thumb(i)}</div>
+    <div><div class="item-name">${i.name}</div><div class="item-sub">${getSection(i)} · ${i.brand||i.supplier}${dimsOf(i)!=='—'?' · '+dimsOf(i):''}</div>
+      ${i.note?`<div class="cp-note">“${i.note}”</div>`:''}
+      ${i.clientComment?`<div class="cp-note" style="color:var(--red)">Your note: ${i.clientComment}</div>`:''}</div>
+    <div class="item-sub">Qty ${i.qty}${i.lead?' · lead '+i.lead:''}</div>
+    <div class="num-cell price-cell">${fmt(clientPrice(i,p))}</div>
+    <div class="cp-actions">${
+      i.status==='Sent'
+      ? `<button class="btn-approve" onclick="cpDecide('${i.id}','Approved')">✓ Approve</button>
+         <button class="btn-decline" onclick="cpDecide('${i.id}','Declined')">Decline</button>`
+      : statusTag(i.status) + (i.status==='Declined'?` <button class="btn-approve" onclick="cpDecide('${i.id}','Approved')">✓ Approve</button>`:'')
+    }</div>
+  </div>`;
+}
+function cpDecide(iid,decision){
+  const f=findItem(iid); if(!f) return;
+  if(decision==='Declined'){
+    const c=prompt('Optional — tell your designer why (alternative, budget, colour…):','');
+    if(c) f.i.clientComment=c;
+  }
+  f.i.status=decision;
+  const client=DB.clients.find(c=>c.id===session.clientId);
+  renderPortal(client);
+  toast(decision==='Approved' ? '✓ Approved — your designer has been notified' : 'Declined — feedback sent to your designer');
+}
+
+/* enter key on login */
+['loginPass','loginEmail','loginStudio'].forEach(id=>{ const el=$(id); if(el) el.addEventListener('keydown',e=>{ if(e.key==='Enter') doAuth(); }); });
+window.addEventListener('resize',()=>{ if(window.innerWidth>860) toggleSidebar(false); });
+$('importFile').addEventListener('change',e=>{ if(e.target.files[0]) handleImportFile(e.target.files[0]); e.target.value=''; });
+</script>
+</body>
+</html>

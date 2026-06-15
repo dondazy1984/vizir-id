@@ -1,0 +1,16 @@
+# Netlify configuration for Vizir ID (static single-page app)
+[build]
+  publish = "."
+
+# Send every path to the app (it's a single self-contained page)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
