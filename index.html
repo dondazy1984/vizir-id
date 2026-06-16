@@ -274,6 +274,22 @@ tr:hover .row-actions{opacity:1}
 .lightbox-img{max-width:95vw;max-height:86vh;object-fit:contain;border-radius:8px;box-shadow:0 24px 70px rgba(0,0,0,.55);background:#FCFBF7}
 .lightbox-cap{color:#E8DFCE;margin-top:14px;font-size:13px;text-align:center;max-width:80vw}
 .lightbox-x{position:fixed;top:18px;right:22px;color:#E8DFCE;font-size:26px;background:none;border:none;cursor:pointer;line-height:1}
+/* annotation viewer */
+.hero-annot-badge{position:absolute;top:9px;left:9px;background:rgba(34,31,26,.78);color:#E8C98F;font-size:11px;font-weight:700;padding:4px 9px;border-radius:99px;backdrop-filter:blur(3px)}
+.annot-back{position:fixed;inset:0;background:rgba(20,18,15,.92);z-index:85;display:flex;align-items:center;justify-content:center;padding:18px}
+.annot-modal{background:var(--panel);border-radius:12px;width:min(1200px,96vw);max-height:92vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 70px rgba(0,0,0,.5)}
+.annot-head{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--line);font-size:14px}
+.annot-body{display:flex;min-height:0;flex:1}
+.annot-stage{flex:1;display:flex;align-items:center;justify-content:center;background:#1c1a17;overflow:auto;padding:14px}
+.annot-wrap{position:relative;display:inline-block;cursor:crosshair;line-height:0}
+.annot-wrap img{max-width:100%;max-height:78vh;display:block;border-radius:4px}
+.annot-pin{position:absolute;transform:translate(-50%,-50%);width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;font-size:12px;font-weight:700;border:2px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.55);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+.annot-side{width:300px;border-left:1px solid var(--line);overflow:auto;padding:12px 14px;background:var(--panel);flex-shrink:0}
+.annot-side-h{font-weight:600;font-size:13px;margin-bottom:10px}
+.annot-note{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.annot-num{width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.annot-note-input{flex:1}
+@media(max-width:760px){.annot-body{flex-direction:column}.annot-side{width:auto;border-left:none;border-top:1px solid var(--line);max-height:32vh}.annot-wrap img{max-height:48vh}}
 .cp-plans{display:flex;gap:12px;flex-wrap:wrap;margin:0 0 12px}
 .cp-plans .plan-card{width:300px}
 
@@ -594,6 +610,7 @@ tr:hover .row-actions{opacity:1}
 <input type="file" id="drawerImgFile" accept="image/*" class="hidden">
 <input type="file" id="importFile" accept=".xlsx,.xls,.csv" class="hidden">
 <div class="toast" id="toast"></div>
+<div class="annot-back hidden" id="annotBack"><div class="annot-modal" id="annotBox"></div></div>
 <div class="lightbox-back hidden" id="lightboxBack" onclick="if(event.target.id==='lightboxBack'||event.target.id==='lightboxImg')closeLightbox()">
   <button class="lightbox-x" onclick="closeLightbox()" aria-label="Close">✕</button>
   <img id="lightboxImg" class="lightbox-img" alt="floorplan">
@@ -716,6 +733,46 @@ function viewImage(src,cap){ $('lightboxImg').src=src; $('lightboxCap').textCont
 function closeLightbox(){ $('lightboxBack').classList.add('hidden'); $('lightboxImg').src=''; }
 function viewPlan(ix){ const f=curFloor(); const pl=f&&f.plans&&f.plans[ix]; if(pl) viewImage(pl.src, (f.name+' — '+(pl.note||'floorplan'))); }
 function viewHero(ix){ const r=curRoom(); const h=r&&r.renders&&r.renders[ix]; if(h) viewImage(h.src, h.note||r.name); }
+/* ---- annotation viewer (internal pins + notes) ---- */
+let annotState=null;
+function annotTarget(){
+  if(!annotState) return null;
+  if(annotState.kind==='render'){ const r=curRoom(); return r&&r.renders&&r.renders[annotState.ix]; }
+  if(annotState.kind==='plan'){ const f=curFloor(); return f&&f.plans&&f.plans[annotState.ix]; }
+  return null;
+}
+function openAnnot(kind,ix){ annotState={kind,ix}; const o=annotTarget(); if(!o) return; o.annotations=o.annotations||[]; $('annotBack').classList.remove('hidden'); renderAnnot(); }
+function closeAnnot(){ $('annotBack').classList.add('hidden'); annotState=null; renderProjectDetail(); scheduleSave(); }
+function annotAdd(e){
+  const o=annotTarget(); if(!o) return;
+  const wrap=$('annotWrap'); if(!wrap) return; const r=wrap.getBoundingClientRect();
+  const x=Math.max(0,Math.min(100,((e.clientX-r.left)/r.width)*100));
+  const y=Math.max(0,Math.min(100,((e.clientY-r.top)/r.height)*100));
+  (o.annotations=o.annotations||[]).push({x:+x.toFixed(2),y:+y.toFixed(2),text:''});
+  renderAnnot(); scheduleSave();
+  setTimeout(()=>{ const ins=document.querySelectorAll('.annot-note-input'); const last=ins[ins.length-1]; if(last) last.focus(); },30);
+}
+function annotSetText(i,v){ const o=annotTarget(); if(o&&o.annotations[i]){ o.annotations[i].text=v; scheduleSave(); } }
+function annotDel(i){ const o=annotTarget(); if(o&&o.annotations){ o.annotations.splice(i,1); renderAnnot(); scheduleSave(); } }
+function _annotFocus(i){ const ins=document.querySelectorAll('.annot-note-input')[i]; if(ins){ ins.focus(); ins.scrollIntoView({block:'nearest'}); } }
+function renderAnnot(){
+  const o=annotTarget(); if(!o) return;
+  const anns=o.annotations||[];
+  const esc=t=>String(t||'').replace(/"/g,'&quot;');
+  const pins=anns.map((a,i)=>`<button class="annot-pin" style="left:${a.x}%;top:${a.y}%" title="${esc(a.text)}" onclick="event.stopPropagation();_annotFocus(${i})">${i+1}</button>`).join('');
+  const notes=anns.length?anns.map((a,i)=>`<div class="annot-note"><span class="annot-num">${i+1}</span>
+    <input class="annot-note-input" value="${esc(a.text)}" placeholder="Note…" oninput="annotSetText(${i},this.value)">
+    <button class="icon-btn" title="Supprimer" onclick="annotDel(${i})">✕</button></div>`).join('')
+    :'<div class="micro">Cliquez sur l\'image pour ajouter une note.</div>';
+  $('annotBox').innerHTML=`
+    <div class="annot-head"><b style="max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(o.note)||'Image'}</b>
+      <span class="micro">· annotations internes (non visibles client)</span>
+      <button class="icon-btn" onclick="closeAnnot()" style="margin-left:auto">✕</button></div>
+    <div class="annot-body">
+      <div class="annot-stage"><div class="annot-wrap" id="annotWrap" onclick="annotAdd(event)"><img src="${o.src}">${pins}</div></div>
+      <div class="annot-side"><div class="annot-side-h">Notes <span class="micro" style="font-weight:400">— cliquez l'image pour ajouter</span></div>${notes}</div>
+    </div>`;
+}
 function swatch(cat){ return `<div class="swatch" style="background:${CAT_BG[cat]||'#EFECE5'}">${CAT_EMOJI[cat]||'📦'}</div>`; }
 function statusTag(s){ return `<span class="tag ${s.toLowerCase()}">${s}</span>`; }
 /* ================= AUTH & NAV ================= */
@@ -974,8 +1031,8 @@ function renderProjectDetail(){
     </span></div>
   <div class="plan-strip" ondragover="dragOn(event)" ondragleave="dragOff(event)" ondrop="dropPlans(event)">
     ${floor.plans.map((pl,ix)=>`<div class="plan-card">
-      <button class="zoom-btn" title="View full size" onclick="event.stopPropagation();viewPlan(${ix})">⤢</button>
-      <img src="${pl.src}" onclick="viewPlan(${ix})">
+      <button class="zoom-btn" title="Agrandir / annoter" onclick="event.stopPropagation();openAnnot('plan',${ix})">⤢</button>
+      <img src="${pl.src}" onclick="openAnnot('plan',${ix})" style="cursor:crosshair">
       <div class="bi-note" onclick="editPlan(${ix})" style="cursor:pointer">${pl.note||'Add note…'}${pl.shared===false?' · <i>hidden from client</i>':''} · <span style="color:var(--accent)">edit</span></div></div>`).join('')}
     <div class="plan-add" onclick="planUpload()">⇪ Upload plan<span style="font-size:10.5px">floor plan, elevation, joinery drawing…</span></div>
   </div>`;
@@ -996,10 +1053,11 @@ function renderProjectDetail(){
   html+=`<div class="sec-head" style="padding-top:14px"><h3 class="serif">${room.name} · Renders</h3><span class="cnt">${room.renders.length}</span>
     <span class="micro" style="margin-left:4px">visuals shown to the client — run AI takeoff straight from a render</span></div>
   <div class="hero-strip" ondragover="dragOn(event)" ondragleave="dragOff(event)" ondrop="dropRenders(event)">
-    ${room.renders.map((h,ix)=>`<div class="hero-card" onclick="editHero(${ix})">
-      <img src="${h.src}">
+    ${room.renders.map((h,ix)=>`<div class="hero-card">
+      <img src="${h.src}" onclick="openAnnot('render',${ix})" style="cursor:crosshair">
       <button class="hero-ai" onclick="event.stopPropagation();heroTakeoff(${ix})">⚡ AI takeoff</button>
-      <div class="hero-cap">${h.note||'Add caption…'}${h.shared===false?' · hidden from client':''}</div></div>`).join('')}
+      ${(h.annotations&&h.annotations.length)?`<span class="hero-annot-badge">✎ ${h.annotations.length}</span>`:''}
+      <div class="hero-cap" onclick="editHero(${ix})" style="cursor:pointer">${h.note||'Add caption…'}${h.shared===false?' · hidden from client':''} · <span style="color:#E8C98F">edit</span></div></div>`).join('')}
     <div class="hero-add" onclick="heroUpload()">⇪ Add render<span style="font-size:10.5px">3D view, photo, visual…</span></div>
   </div>`;
   html+=`<div class="import-dz" ondragover="dragOn(event)" ondragleave="dragOff(event)" ondrop="dropSchedImport(event)" onclick="document.getElementById('importFile').click()">
@@ -1153,7 +1211,8 @@ function editHero(ix){
   const room=curRoom(); const h=room.renders[ix];
   openModal(`<div class="modal-head"><h3>Room render</h3><button class="icon-btn" onclick="closeModal()">✕</button></div>
   <div class="modal-body">
-    <img src="${h.src}" style="width:100%;border-radius:9px;background:#1c1a17;max-height:300px;object-fit:contain">
+    <img src="${h.src}" onclick="closeModal();openAnnot('render',${ix})" title="Agrandir / annoter" style="width:100%;border-radius:9px;background:#1c1a17;max-height:300px;object-fit:contain;cursor:zoom-in">
+    <div style="text-align:right;margin-top:6px"><button class="btn-ghost btn-sm" onclick="closeModal();openAnnot('render',${ix})">⤢ Agrandir / annoter</button></div>
     <label>Caption</label><input id="mHrNote" value="${(h.note||'').replace(/"/g,'&quot;')}">
     <div style="display:flex;align-items:center;gap:10px;margin-top:16px">
       <span class="switch ${h.shared!==false?'on':''}" id="mHrShared" onclick="this.classList.toggle('on')"></span>
@@ -1195,8 +1254,8 @@ function editPlan(ix){
   const fl=curFloor(); const pl=fl.plans[ix];
   openModal(`<div class="modal-head"><h3>${fl.name} — floorplan</h3><button class="icon-btn" onclick="closeModal()">✕</button></div>
   <div class="modal-body">
-    <img src="${pl.src}" onclick="closeModal();viewPlan(${ix})" title="Click to view full size" style="width:100%;max-height:62vh;object-fit:contain;border-radius:9px;background:#FCFBF7;cursor:zoom-in">
-    <div style="text-align:right;margin-top:6px"><button class="btn-ghost btn-sm" onclick="closeModal();viewPlan(${ix})">⤢ View full size</button></div>
+    <img src="${pl.src}" onclick="closeModal();openAnnot('plan',${ix})" title="Agrandir / annoter" style="width:100%;max-height:62vh;object-fit:contain;border-radius:9px;background:#FCFBF7;cursor:zoom-in">
+    <div style="text-align:right;margin-top:6px"><button class="btn-ghost btn-sm" onclick="closeModal();openAnnot('plan',${ix})">⤢ Agrandir / annoter</button></div>
     <label>Note / revision</label><input id="mPlNote" value="${(pl.note||'').replace(/"/g,'&quot;')}">
     <div style="display:flex;align-items:center;gap:10px;margin-top:16px">
       <span class="switch ${pl.shared!==false?'on':''}" id="mPlShared" onclick="this.classList.toggle('on')"></span>
@@ -1711,7 +1770,8 @@ function renderDrawer(){
 }
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){
-    if(!$('lightboxBack').classList.contains('hidden')) closeLightbox();
+    if(!$('annotBack').classList.contains('hidden')) closeAnnot();
+    else if(!$('lightboxBack').classList.contains('hidden')) closeLightbox();
     else if(drawer.open) closeDrawer();
     else if(!$('modalBack').classList.contains('hidden')) closeModal();
   }
