@@ -1598,15 +1598,19 @@ function createProject(){
   DB.projects.push(p); closeModal(); openProject(p.id); toast('Project created');
 }
 function openRoomModal(){
-  openModal(`<div class="modal-head"><h3>Add room</h3><button class="icon-btn" onclick="closeModal()">✕</button></div>
-  <div class="modal-body"><label>Room name</label><input id="mRoomName" placeholder="Dining Room"></div>
-  <div class="modal-foot"><button class="btn-ghost" onclick="closeModal()">Cancel</button><button class="btn-accent" onclick="createRoom()">Add room</button></div>`);
+  openModal(`<div class="modal-head"><h3>Add room(s)</h3><button class="icon-btn" onclick="closeModal()">✕</button></div>
+  <div class="modal-body"><label>Room name(s)</label><textarea id="mRoomName" rows="5" placeholder="Living Room&#10;Kitchen&#10;Master Bedroom"></textarea>
+  <div class="micro" style="margin-top:5px">Add several at once — one per line (or separated by commas).</div></div>
+  <div class="modal-foot"><button class="btn-ghost" onclick="closeModal()">Cancel</button><button class="btn-accent" onclick="createRoom()">Add</button></div>`);
 }
 function createRoom(){
-  const n=$('mRoomName').value.trim(); if(!n) return;
+  const names=($('mRoomName').value||'').split(/[\n,]+/).map(x=>x.trim()).filter(Boolean);
+  if(!names.length) return;
   const f=curFloor(); if(!f){ toast('Add a floor first'); return; }
-  const r={id:uid('r'),name:n,items:[]};
-  f.rooms.push(r); curRoomId=r.id; closeModal(); renderProjectDetail(); scheduleSave();
+  let first=null;
+  names.forEach(n=>{ const r={id:uid('r'),name:n,items:[]}; f.rooms.push(r); if(!first) first=r; });
+  curRoomId=first.id; closeModal(); renderProjectDetail(); scheduleSave();
+  toast(names.length>1 ? names.length+' rooms added' : 'Room added');
 }
 function openClientModal(cid){
   const c = cid ? DB.clients.find(x=>x.id===cid) : null;
@@ -2084,7 +2088,8 @@ const FR = {
   'New project':'Nouveau projet','Project name':'Nom du projet','Type':'Type','Client':'Client',
   'Rooms on the ground floor (comma separated)':'Pièces du rez-de-chaussée (séparées par des virgules)',
   'More floors can be added inside the project.':'D’autres niveaux peuvent être ajoutés dans le projet.',
-  'Add room':'Ajouter une pièce','Room name':'Nom de la pièce','Add floor':'Ajouter un niveau','Floor name':'Nom du niveau',
+  'Add room':'Ajouter une pièce','Room name':'Nom de la pièce',
+  'Add room(s)':'Ajouter pièce(s)','Room name(s)':'Nom(s) de pièce','Add several at once — one per line (or separated by commas).':'Ajoutez-en plusieurs à la fois — une par ligne (ou séparées par des virgules).','Add floor':'Ajouter un niveau','Floor name':'Nom du niveau',
   'New client':'Nouveau client','Edit client':'Modifier le client','Client name':'Nom du client','Email (portal login)':'E-mail (accès portail)',
   'Portal password':'Mot de passe portail','Default markup %':'Marge par défaut %',
   'Room render':'Rendu de la pièce','Caption':'Légende','Visible in client portal':'Visible dans le portail client',
