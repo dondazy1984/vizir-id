@@ -377,6 +377,7 @@ tr:hover .row-actions{opacity:1}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 .hero-strip.dragover,.plan-strip.dragover,.board-grid.dragover{outline:2px dashed var(--accent);outline-offset:5px;border-radius:12px;background:#F6EFE7}
+.img-slots.dragover{outline:2px dashed var(--accent);outline-offset:3px;border-radius:8px;background:#F6EFE7}
 .import-dz{border:1.5px dashed #CFC8B8;border-radius:10px;background:#FCFBF7;padding:13px 16px;text-align:center;color:var(--muted);font-size:12.5px;cursor:pointer;margin:8px 0 4px;transition:border-color .15s,background .15s}
 .import-dz:hover{border-color:var(--accent);color:var(--accent)}
 .import-dz.dragover{border-color:var(--accent);background:#F6EFE7;color:var(--accent)}
@@ -701,7 +702,7 @@ tr:hover .row-actions{opacity:1}
 </div>
 <div class="drawer-back hidden" id="drawerBack" onclick="closeDrawer()"></div>
 <div class="drawer hidden" id="drawerEl"></div>
-<input type="file" id="drawerImgFile" accept="image/*" class="hidden">
+<input type="file" id="drawerImgFile" accept="image/*" multiple class="hidden">
 <input type="file" id="importFile" accept=".xlsx,.xls,.csv" class="hidden">
 <div class="toast" id="toast"></div>
 <div class="annot-back hidden" id="annotBack"><div class="annot-modal" id="annotBox"></div></div>
@@ -2201,9 +2202,10 @@ document.addEventListener('keydown',e=>{
 function drawerSummary(){
   const d=drawer.draft;
   return `
-  <div class="img-slots">
+  <div class="img-slots" ondragover="dragOn(event)" ondragleave="dragOff(event)" ondrop="dropDrawerImages(event)">
     ${d.images.map((src,ix)=>`<div class="img-slot" title="Click to remove" onclick="drawer.draft.images.splice(${ix},1);renderDrawer()"><img src="${src}"></div>`).join('')}
-    ${d.images.length<4?`<div class="img-slot" onclick="drawerAddImage()">＋<br>Add image</div>`:''}
+    ${Array.from({length:drawer._uploading||0}).map(()=>`<div class="img-slot"><span class="spin"></span></div>`).join('')}
+    ${(d.images.length+(drawer._uploading||0))<4?`<div class="img-slot" onclick="drawerAddImage()">＋<br>Add / drop image</div>`:''}
   </div>
   <label>Product name</label>${dIn('name','Enter product name')}
   <div class="spec2">
@@ -2287,14 +2289,27 @@ function drawerApprovals(){
   ${d.clientComment?`<div class="sec-title">Client feedback</div><div class="cp-note" style="color:var(--red)">“${d.clientComment}”</div>`:''}
   ${d.status==='Sent'?'<p style="color:var(--muted);font-size:12px;margin-top:14px">This item is live in the client portal and awaiting review.</p>':''}`;
 }
+async function _drawerAddOne(f){
+  if((drawer.draft.images||[]).length>=4){ toast('Max 4 images'); return false; }
+  drawer._uploading=(drawer._uploading||0)+1; renderDrawer();
+  let url=''; try{ url=await uploadImage(f); }catch(e){}
+  drawer._uploading=Math.max(0,(drawer._uploading||1)-1);
+  if(url){ (drawer.draft.images=drawer.draft.images||[]).push(url); }
+  renderDrawer();
+  return !!url;
+}
 function drawerAddImage(){
   const inp=$('drawerImgFile');
-  inp.onchange=async e=>{
-    const f=e.target.files[0]; if(!f) return;
-    const url=await uploadImage(f);
-    drawer.draft.images.push(url); renderDrawer(); inp.value='';
-  };
+  inp.onchange=async e=>{ const files=[...e.target.files]; inp.value=''; let ok=false; for(const f of files){ if(f.type&&f.type.startsWith('image/')){ if(await _drawerAddOne(f)) ok=true; } } if(ok) toast('Image added'); };
   inp.click();
+}
+async function dropDrawerImages(e){
+  e.preventDefault(); if(e.currentTarget) e.currentTarget.classList.remove('dragover');
+  if(!drawer.open||!drawer.draft) return;
+  const imgs=[...(e.dataTransfer.files||[])].filter(f=>f.type && f.type.startsWith('image/'));
+  if(!imgs.length){ toast('Image files only'); return; }
+  let ok=false; for(const f of imgs){ if(await _drawerAddOne(f)) ok=true; }
+  if(ok) toast('Image added');
 }
 function saveToLibrary(){
   const d=drawer.draft;
