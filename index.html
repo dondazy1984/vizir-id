@@ -550,6 +550,7 @@ tr:hover .row-actions{opacity:1}
             </div>
           </div>
           <button class="btn-ghost" onclick="openRoomModal()">+ Add room</button>
+          <button class="btn-accent" onclick="sendAllToClient()">✉ Tout envoyer</button>
           <button class="btn-ghost" onclick="openShareModal()">🔗 Partager</button>
           <button class="btn-ghost" onclick="uploadProjectCover()">🖼 Couverture</button>
           <button class="btn-ghost" onclick="previewPortal()">👁 Aperçu client</button>
@@ -671,7 +672,7 @@ tr:hover .row-actions{opacity:1}
     <div class="cp-cover" id="cpCover">
       <span class="cp-who-chip" id="cpWho"></span>
       <div class="cp-logo" id="cpLogo"></div>
-      <button class="cp-cover-upload hidden" id="cpCoverBtn" onclick="uploadProjectCover()">🖼 Changer la couverture</button>
+      <button class="cp-cover-upload hidden" id="cpCoverBtn" onclick="event.stopPropagation();uploadProjectCover()">🖼 Changer la couverture</button>
     </div>
     <div class="cp-titlerow">
       <h1 id="cpProject"></h1>
@@ -977,6 +978,15 @@ function uploadProjectCover(){
 }
 function projShare(p){ if(!p.share) p.share={published:true,pricing:true,brand:true,supplier:true,details:true,url:true,canApprove:true}; return p.share; }
 function toggleShare(k,el){ const sh=projShare(projById(curProjectId)); const cur=sh[k]!==false; sh[k]=!cur; el.classList.toggle('on', sh[k]); scheduleSave(); }
+function sendAllToClient(){
+  const p=projById(curProjectId); if(!p){ toast('Open a project'); return; }
+  let n=0; (p.floors||[]).forEach(f=>(f.rooms||[]).forEach(r=>(r.items||[]).forEach(i=>{ if(i.status==='Draft') n++; })));
+  if(!n){ toast('Tous les articles sont déjà envoyés'); return; }
+  if(!confirm('Envoyer '+n+' article(s) en brouillon au client ? Ils deviendront visibles dans le portail.')) return;
+  (p.floors||[]).forEach(f=>(f.rooms||[]).forEach(r=>(r.items||[]).forEach(i=>{ if(i.status==='Draft') i.status='Sent'; })));
+  const sh=projShare(p); if(sh.published===false){ sh.published=true; }
+  renderProjectDetail(); scheduleSave(); toast(n+' article(s) envoyé(s) au client');
+}
 function openShareModal(){
   const p=projById(curProjectId); if(!p){ toast('Open a project'); return; }
   const sh=projShare(p); const c=clientOf(p);
@@ -1071,7 +1081,7 @@ function renderPortalRemote(){
   $('cpWho').textContent=d.client.name||'';
   $('cpType').textContent=(d.project.type||'')+' · prepared for '+(d.client.name||'');
   $('cpProject').textContent=d.project.name||'';
-  const _cov=$('cpCover'); if(_cov) _cov.style.backgroundImage = d.project.cover ? 'url("'+d.project.cover+'")' : '';
+  const _cov=$('cpCover'); if(_cov){ _cov.style.backgroundImage = d.project.cover ? 'url("'+d.project.cover+'")' : ''; _cov.style.cursor = d.project.cover ? 'zoom-in' : ''; _cov.onclick = d.project.cover ? function(e){ if(e.target.closest('.cp-cover-upload')||e.target.closest('.cp-who-chip')) return; viewImage(d.project.cover,''); } : null; }
   const _logo=$('cpLogo'); if(_logo) _logo.textContent=(d.project.name||'').split(/\s+/).filter(Boolean).map(w=>w[0]).slice(0,2).join('').toUpperCase();
   const _cb=$('cpCoverBtn'); if(_cb) _cb.classList.toggle('hidden', !portalPreview);
   const all=[]; d.floors.forEach(f=>f.rooms.forEach(r=>(r.items||[]).forEach(i=>all.push(Object.assign({},i,{_floor:f.name,_room:r.name})))));
@@ -2429,7 +2439,7 @@ const FR = {
   'Product attachments':'Pièces jointes produit','Trade price € (your cost)':'Prix d’achat (votre coût)','RRP €':'PVC',
   'Item / Product':'Article / Produit','SKU / Ref':'Réf / SKU','Trade / cost':'Achat / coût','Item / Product ':'Article / Produit',
   // portal
-  'CLIENT SPACE':'ESPACE CLIENT','Total investment':'Investissement total','Total approved':'Total approuvé','Total proposed':'Total proposé','Awaiting approval':'En attente','All':'Tous','To approve':'À approuver','Proposed':'Proposé','Nothing here':'Rien ici','Approved selections':'Sélections approuvées','Approvals':'Approbations','History':'Historique','approved':'approuvé','marked for review':'à revoir','sent for approval':'envoyé pour validation','left a comment':'a laissé un commentaire','updated':'mis à jour','No comment yet.':'Aucun commentaire.','Reply':'Répondre','Reply to the client…':'Répondre au client…','No activity yet':'Aucune activité','approvals & client comments — reply inline, the conversation stays on the item':'approbations & commentaires clients — répondez ici, la conversation reste attachée à l’article','Approvals & client comments will appear here once items are sent.':'Les approbations et commentaires apparaîtront ici une fois les articles envoyés.','You':'Vous','💬 Comment':'💬 Commenter','Comment sent':'Commentaire envoyé','Studio':'Studio','Share your schedule':'Partager le planning','Publish to client portal':'Publier dans le portail client','Client link':'Lien client','Access code':'Code d’accès','Permissions — what the client sees':'Permissions — ce que voit le client','Pricing':'Prix','Details & notes':'Détails & notes','Product links':'Liens produit','Client can approve / decline':'Le client peut approuver / refuser','Hidden fields are removed on the server — clients can never access them.':'Les champs masqués sont retirés côté serveur — le client n’y a jamais accès.','Close':'Fermer','👁 Preview':'👁 Aperçu',
+  'CLIENT SPACE':'ESPACE CLIENT','Total investment':'Investissement total','Total approved':'Total approuvé','Total proposed':'Total proposé','Awaiting approval':'En attente','All':'Tous','To approve':'À approuver','Proposed':'Proposé','Nothing here':'Rien ici','Approved selections':'Sélections approuvées','Approvals':'Approbations','History':'Historique','approved':'approuvé','marked for review':'à revoir','sent for approval':'envoyé pour validation','left a comment':'a laissé un commentaire','updated':'mis à jour','No comment yet.':'Aucun commentaire.','Reply':'Répondre','Reply to the client…':'Répondre au client…','No activity yet':'Aucune activité','approvals & client comments — reply inline, the conversation stays on the item':'approbations & commentaires clients — répondez ici, la conversation reste attachée à l’article','Approvals & client comments will appear here once items are sent.':'Les approbations et commentaires apparaîtront ici une fois les articles envoyés.','You':'Vous','💬 Comment':'💬 Commenter','Comment sent':'Commentaire envoyé','Studio':'Studio','✉ Tout envoyer':'✉ Tout envoyer','Open a project':'Ouvrez un projet','Share your schedule':'Partager le planning','Publish to client portal':'Publier dans le portail client','Client link':'Lien client','Access code':'Code d’accès','Permissions — what the client sees':'Permissions — ce que voit le client','Pricing':'Prix','Details & notes':'Détails & notes','Product links':'Liens produit','Client can approve / decline':'Le client peut approuver / refuser','Hidden fields are removed on the server — clients can never access them.':'Les champs masqués sont retirés côté serveur — le client n’y a jamais accès.','Close':'Fermer','👁 Preview':'👁 Aperçu',
   'Awaiting your review':'En attente de votre avis','tap approve or decline below':'approuvez ou refusez ci-dessous',
   '✓ Approve':'✓ Approuver','Decline':'Refuser','Nothing to review yet':'Rien à examiner pour l’instant',
   'Your designer will share selections here.':'Votre designer partagera les sélections ici.','No project yet':'Aucun projet pour l’instant',
