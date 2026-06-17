@@ -197,6 +197,9 @@ tr:hover .row-actions{opacity:1}
 .btn-decline:hover{background:#EFD4D1}
 .cp-note{font-size:12px;color:var(--muted);font-style:italic;margin-top:3px}
 .toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--ink);color:#F5F1E9;padding:12px 22px;border-radius:99px;font-size:13px;box-shadow:0 12px 32px rgba(0,0,0,.3);transition:transform .3s;z-index:99}
+#previewBar{position:fixed;top:0;left:0;right:0;z-index:70;background:var(--gold);color:#2A2620;font-size:13px;font-weight:600;padding:8px 14px;display:flex;align-items:center;gap:14px;justify-content:center;flex-wrap:wrap;box-shadow:0 2px 10px rgba(0,0,0,.2)}
+#previewBar label{display:flex;gap:6px;align-items:center;font-weight:500}
+#previewBar .btn-ghost{background:rgba(255,255,255,.4);border-color:transparent}
 .toast.show{transform:translateX(-50%) translateY(0)}
 
 /* view tabs / search / sections */
@@ -475,6 +478,7 @@ tr:hover .row-actions{opacity:1}
             </div>
           </div>
           <button class="btn-ghost" onclick="openRoomModal()">+ Add room</button>
+          <button class="btn-ghost" onclick="previewPortal()">👁 Aperçu client</button>
           <button class="btn-accent" onclick="openDrawer()">New ⌘N</button>
         </div>
       </div>
@@ -579,6 +583,7 @@ tr:hover .row-actions{opacity:1}
 </div>
 
 <!-- ================= CLIENT PORTAL ================= -->
+<div id="previewBar" class="hidden"></div>
 <div id="clientPortal" class="hidden">
   <div class="cp-head">
     <div class="cp-nav">
@@ -879,6 +884,42 @@ function cpRemoteRow(i){
       ? `<button class="btn-approve" onclick="portalDecide('${i.id}','Approved')">✓ Approve</button> <button class="btn-decline" onclick="portalDecide('${i.id}','Declined')">Decline</button>`
       : statusTag(i.status)+(i.status==='Declined'?` <button class="btn-approve" onclick="portalDecide('${i.id}','Approved')">✓ Approve</button>`:'') }</div></div>`;
 }
+let portalPreview=false, portalPreviewDrafts=true;
+function buildPortalPreview(p){
+  const c=clientOf(p)||{};
+  const floors=(p.floors||[]).map(f=>({
+    name:f.name,
+    plans:(f.plans||[]).filter(pl=>pl.shared!==false).map(pl=>({src:pl.src,note:pl.note||''})),
+    rooms:(f.rooms||[]).map(r=>({
+      name:r.name,
+      renders:(r.renders||[]).filter(h=>h.shared!==false).map(h=>({src:h.src,note:h.note||''})),
+      items:(r.items||[]).filter(i=>portalPreviewDrafts || i.status!=='Draft').map(i=>({
+        id:i.id, name:i.name, section:getSection(i), brand:i.brand||'', supplier:i.supplier||'',
+        dims:(dimsOf(i)!=='—'?dimsOf(i):''), qty:i.qty||1, lead:i.lead||'', note:i.note||'', clientComment:i.clientComment||'',
+        status:i.status, price:Math.round(clientPrice(i,p))
+      }))
+    }))
+  }));
+  return {project:{name:p.name,type:p.type||''}, client:{name:c.name||''}, floors};
+}
+function previewPortal(){
+  const p=projById(curProjectId); if(!p){ toast('Open a project'); return; }
+  portalPreview=true; portalData=buildPortalPreview(p);
+  $('app').classList.add('hidden'); $('clientPortal').classList.remove('hidden');
+  $('clientPortal').style.paddingTop='42px';
+  $('previewBar').classList.remove('hidden');
+  $('previewBar').innerHTML=`<span>👁 Aperçu portail client — <b>${(p.name||'').replace(/</g,'&lt;')}</b></span>
+    <label><input type="checkbox" ${portalPreviewDrafts?'checked':''} onchange="portalPreviewDrafts=this.checked; portalData=buildPortalPreview(projById(curProjectId)); renderPortalRemote()"> inclure les brouillons</label>
+    <button class="btn-ghost btn-sm" onclick="closePreview()">← Retour à l'app</button>`;
+  renderPortalRemote();
+  window.scrollTo(0,0);
+}
+function closePreview(){
+  portalPreview=false;
+  $('previewBar').classList.add('hidden');
+  $('clientPortal').classList.add('hidden'); $('clientPortal').style.paddingTop='';
+  $('app').classList.remove('hidden');
+}
 function renderPortalRemote(){
   const d=portalData; if(!d) return;
   $('clientPortal').classList.remove('hidden');
@@ -909,6 +950,7 @@ function renderPortalRemote(){
   if(LANG==='fr') applyLang();
 }
 async function portalDecide(itemId, decision){
+  if(portalPreview){ toast('Aperçu — action client désactivée'); return; }
   let comment='';
   if(decision==='Declined'){ comment=(prompt('Optional — tell your designer why (alternative, budget, colour…):','')||''); }
   try{ await sb.functions.invoke('portal',{body:{token:portalToken, code:portalCode, action:'decide', itemId, decision, comment}}); }catch(e){}
