@@ -1715,9 +1715,113 @@ function handleImportFile(file){
       }
     }catch(err){ toast('Could not read that file'); return; }
     if(!sheets.length){ toast('No rows found in the file'); return; }
-    openImportModal(sheets);
+    if(isWorkbook(sheets)) openWorkbookModal(sheets); else openImportModal(sheets);
   };
   if(isCsv) rd.readAsText(file); else rd.readAsArrayBuffer(file);
+}
+let workbookState=null;
+function _norm0(x){ return String(x==null?'':x).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,''); }
+function findHeaderRow(data){
+  for(let i=0;i<Math.min(data.length,6);i++){
+    const c=(data[i]||[]).map(_norm0);
+    if(c.some(x=>x.includes('niveau')) && c.some(x=>x.includes('piece')||x.includes('emplacement'))) return i;
+  }
+  return -1;
+}
+function isWorkbook(sheets){ return (sheets||[]).some(sh=>findHeaderRow(sh.data)>=0); }
+function normFloor(v){
+  const t=String(v||'').trim(); const s=t.toUpperCase();
+  if(s.startsWith('RDC')) return 'Rez-de-chaussée';
+  if(s.startsWith('R+1')||s.startsWith('R + 1')) return '1er étage';
+  if(s.startsWith('R+2')) return '2e étage';
+  if(s.startsWith('R+3')) return '3e étage';
+  if(s.startsWith('R+4')) return '4e étage';
+  return t || null;
+}
+function sheetCat(name){
+  const n=_norm0(name);
+  if(n.includes('light')||n.includes('eclair')||n.includes('lumi')) return ['Éclairage','Lighting'];
+  if(n.includes('finish')||n.includes('finit')) return ['Finitions','Finishes'];
+  if(n.includes('door')||n.includes('window')||n.includes('porte')||n.includes('menuis')) return ['Portes & Fenêtres','Joinery'];
+  if(n.includes('sanit')) return ['Sanitaires','Sanitaryware'];
+  return ['Mobilier & équipement','Furniture'];
+}
+function colIdx(hdr, aliases){
+  for(const a of aliases){ const i=hdr.findIndex(h=>h===a); if(i>=0) return i; }
+  for(const a of aliases){ if(a.length<3) continue; const i=hdr.findIndex(h=>h.includes(a)); if(i>=0) return i; }
+  return -1;
+}
+function _findOrCreateFloor(p,name){ p.floors=p.floors||[]; let f=p.floors.find(x=>x.name===name); if(!f){ f={id:uid('f'),name,plans:[],rooms:[]}; p.floors.push(f);} return f; }
+function _findOrCreateRoom(f,name){ f.rooms=f.rooms||[]; let r=f.rooms.find(x=>x.name===name); if(!r){ r={id:uid('r'),name,items:[]}; f.rooms.push(r);} return r; }
+function openWorkbookModal(sheets){
+  const p=projById(curProjectId); if(!p){ toast('Open a project first'); return; }
+  workbookState={sheets, include:{}, double:false};
+  sheets.forEach(sh=>{ workbookState.include[sh.name]= findHeaderRow(sh.data)>=0; });
+  renderWorkbookModal();
+}
+function renderWorkbookModal(){
+  const st=workbookState; const p=projById(curProjectId);
+  const rowsFor=sh=>{ const hr=findHeaderRow(sh.data); return hr<0?0:Math.max(0,sh.data.length-hr-1); };
+  const esc=t=>String(t).replace(/</g,'&lt;').replace(/"/g,'&quot;');
+  const list=st.sheets.map(sh=>{ const ok=findHeaderRow(sh.data)>=0; const sec=sheetCat(sh.name)[0];
+    return `<label style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px;${ok?'':'opacity:.5'}">
+      <input type="checkbox" ${st.include[sh.name]?'checked':''} ${ok?'':'disabled'} onchange="workbookState.include[${JSON.stringify(sh.name)}]=this.checked">
+      <b style="flex:1">${esc(sh.name)}</b><span class="micro">${ok?('→ '+sec+' · '+rowsFor(sh)+' lignes'):'— ignoré'}</span></label>`;
+  }).join('');
+  openModal(`<div class="modal-head"><h3>Import schedule workbook</h3><button class="icon-btn" onclick="closeModal()">✕</button></div>
+  <div class="modal-body">
+    <p class="micro" style="margin-bottom:8px">Multi-sheet workbook detected. Rows merge into <b>${esc(p.name)}</b> by <b>floor</b> &amp; <b>room</b>. Existing renders, plans and cover are preserved; items with the same Réf are updated, not duplicated.</p>
+    ${list}
+    <div style="display:flex;align-items:center;gap:10px;margin-top:14px">
+      <span class="switch ${st.double?'on':''}" onclick="workbookState.double=!workbookState.double;this.classList.toggle('on')"></span>
+      <b style="font-size:13px">Double prices (×2 — fourniture + pose)</b>
+    </div>
+  </div>
+  <div class="modal-foot" style="justify-content:space-between"><button class="btn-ghost" onclick="closeModal()">Cancel</button><button class="btn-accent" onclick="runWorkbookImport()">Import (merge)</button></div>`);
+}
+function runWorkbookImport(){
+  const st=workbookState; const p=projById(curProjectId); if(!p){ toast('Open a project'); return; }
+  const mult=st.double?2:1; let added=0, updated=0;
+  st.sheets.forEach(sh=>{
+    if(!st.include[sh.name]) return;
+    const hr=findHeaderRow(sh.data); if(hr<0) return;
+    const hdr=(sh.data[hr]||[]).map(_norm0);
+    const sc=sheetCat(sh.name), section=sc[0], cat=sc[1];
+    const ci={ niveau:colIdx(hdr,['niveau']), piece:colIdx(hdr,['pieceeau','piecedeau','piece','emplacement']),
+      ref:colIdx(hdr,['ref','reference']), qte:colIdx(hdr,['qte','quantite','qty','nombre']),
+      pu:colIdx(hdr,['pufcfa','pu','prixunitaire','prix']),
+      name:colIdx(hdr,['article','typedeluminaire','appareilequipement','appareil','type','designation','produit']),
+      desc:colIdx(hdr,['descriptionspecification','specification','description']),
+      sol:colIdx(hdr,['sol']), murs:colIdx(hdr,['murs','mur']), plaf:colIdx(hdr,['plafond']), plin:colIdx(hdr,['plinthesdetails','plinthes','plinthe']),
+      dims:colIdx(hdr,['dimension','taille']), mat:colIdx(hdr,['materiaufinition','materiau','matiere']) };
+    const isFin = cat==='Finishes';
+    for(let i=hr+1;i<sh.data.length;i++){
+      const row=sh.data[i]||[];
+      const g=k=> ci[k]>=0 ? String(row[ci[k]]==null?'':row[ci[k]]).trim() : '';
+      const floor=normFloor(g('niveau')); if(!floor) continue;
+      if(isFin){
+        const roomName=g('piece'); if(!roomName) continue;
+        const specs=[['Sol',g('sol')],['Murs',g('murs')],['Plafond',g('plaf')],['Plinthes',g('plin')]].filter(x=>x[1]);
+        if(!specs.length) continue;
+        const note=specs.map(x=>x[0]+': '+x[1]).join('; ');
+        const f=_findOrCreateFloor(p,floor), r=_findOrCreateRoom(f,roomName);
+        const ex=(r.items||[]).find(it=>it.name==='Revêtements (finitions)');
+        if(ex){ ex.note=note; updated++; } else { (r.items=r.items||[]).push({id:uid('i'),name:'Revêtements (finitions)',section:'Finitions',cat:'Finishes',qty:1,cost:0,status:'Draft',taxable:true,note}); added++; }
+        continue;
+      }
+      const name=g('name'); if(!name) continue;
+      let roomName = (cat==='Joinery') ? 'Portes & Fenêtres' : (g('piece') || 'Divers');
+      const ref=g('ref'); const qty=Math.max(1,parseInt(g('qte'))||1);
+      const cost=(parseFloat(String(g('pu')).replace(/[^0-9.\-]/g,''))||0)*mult;
+      let note=g('desc'); if(cat==='Joinery'){ note=[g('piece'),g('dims'),g('mat')].filter(Boolean).join(' · '); }
+      const f=_findOrCreateFloor(p,floor), r=_findOrCreateRoom(f,roomName);
+      const ex = ref ? (r.items||[]).find(it=>it.sku===ref) : null;
+      if(ex){ ex.cost=cost; ex.qty=qty; if(note) ex.note=note; ex.section=section; ex.cat=cat; updated++; }
+      else { const it={id:uid('i'),name,section,cat,qty,cost,status:'Draft',taxable:true}; if(ref){it.sku=ref;it.docCode=ref;} if(note)it.note=note; (r.items=r.items||[]).push(it); added++; }
+    }
+  });
+  closeModal(); renderProjectDetail(); scheduleSave();
+  toast(added+' ajout(s) · '+updated+' MAJ — rendus & plans conservés');
 }
 function openImportModal(sheets){
   if(!curRoom()){ toast('Open a project room first'); return; }
@@ -2475,7 +2579,7 @@ const FR = {
   'Product attachments':'Pièces jointes produit','Trade price € (your cost)':'Prix d’achat (votre coût)','RRP €':'PVC',
   'Item / Product':'Article / Produit','SKU / Ref':'Réf / SKU','Trade / cost':'Achat / coût','Item / Product ':'Article / Produit',
   // portal
-  'CLIENT SPACE':'ESPACE CLIENT','Total investment':'Investissement total','Total approved':'Total approuvé','Total proposed':'Total proposé','Awaiting approval':'En attente','All':'Tous','To approve':'À approuver','Proposed':'Proposé','Nothing here':'Rien ici','Approved selections':'Sélections approuvées','Approvals':'Approbations','History':'Historique','approved':'approuvé','marked for review':'à revoir','sent for approval':'envoyé pour validation','left a comment':'a laissé un commentaire','updated':'mis à jour','No comment yet.':'Aucun commentaire.','Reply':'Répondre','Reply to the client…':'Répondre au client…','No activity yet':'Aucune activité','approvals & client comments — reply inline, the conversation stays on the item':'approbations & commentaires clients — répondez ici, la conversation reste attachée à l’article','Approvals & client comments will appear here once items are sent.':'Les approbations et commentaires apparaîtront ici une fois les articles envoyés.','You':'Vous','💬 Comment':'💬 Commenter','Search':'Recherche','results across the project':'résultats dans tout le projet','Clear':'Effacer','No results':'Aucun résultat','No items match your search.':'Aucun article ne correspond.','Comment sent':'Commentaire envoyé','Studio':'Studio','✉ Tout envoyer':'✉ Tout envoyer','Open a project':'Ouvrez un projet','Share your schedule':'Partager le planning','Publish to client portal':'Publier dans le portail client','Client link':'Lien client','Access code':'Code d’accès','Permissions — what the client sees':'Permissions — ce que voit le client','Pricing':'Prix','Details & notes':'Détails & notes','Product links':'Liens produit','Client can approve / decline':'Le client peut approuver / refuser','Hidden fields are removed on the server — clients can never access them.':'Les champs masqués sont retirés côté serveur — le client n’y a jamais accès.','Close':'Fermer','👁 Preview':'👁 Aperçu',
+  'CLIENT SPACE':'ESPACE CLIENT','Total investment':'Investissement total','Total approved':'Total approuvé','Total proposed':'Total proposé','Awaiting approval':'En attente','All':'Tous','To approve':'À approuver','Proposed':'Proposé','Nothing here':'Rien ici','Approved selections':'Sélections approuvées','Approvals':'Approbations','History':'Historique','approved':'approuvé','marked for review':'à revoir','sent for approval':'envoyé pour validation','left a comment':'a laissé un commentaire','updated':'mis à jour','No comment yet.':'Aucun commentaire.','Reply':'Répondre','Reply to the client…':'Répondre au client…','No activity yet':'Aucune activité','approvals & client comments — reply inline, the conversation stays on the item':'approbations & commentaires clients — répondez ici, la conversation reste attachée à l’article','Approvals & client comments will appear here once items are sent.':'Les approbations et commentaires apparaîtront ici une fois les articles envoyés.','You':'Vous','💬 Comment':'💬 Commenter','Search':'Recherche','Import schedule workbook':'Importer le classeur','Import (merge)':'Importer (fusion)','Double prices (×2 — fourniture + pose)':'Doubler les prix (×2 — fourniture + pose)','Open a project first':'Ouvrez d’abord un projet','results across the project':'résultats dans tout le projet','Clear':'Effacer','No results':'Aucun résultat','No items match your search.':'Aucun article ne correspond.','Comment sent':'Commentaire envoyé','Studio':'Studio','✉ Tout envoyer':'✉ Tout envoyer','Open a project':'Ouvrez un projet','Share your schedule':'Partager le planning','Publish to client portal':'Publier dans le portail client','Client link':'Lien client','Access code':'Code d’accès','Permissions — what the client sees':'Permissions — ce que voit le client','Pricing':'Prix','Details & notes':'Détails & notes','Product links':'Liens produit','Client can approve / decline':'Le client peut approuver / refuser','Hidden fields are removed on the server — clients can never access them.':'Les champs masqués sont retirés côté serveur — le client n’y a jamais accès.','Close':'Fermer','👁 Preview':'👁 Aperçu',
   'Awaiting your review':'En attente de votre avis','tap approve or decline below':'approuvez ou refusez ci-dessous',
   '✓ Approve':'✓ Approuver','Decline':'Refuser','Nothing to review yet':'Rien à examiner pour l’instant',
   'Your designer will share selections here.':'Votre designer partagera les sélections ici.','No project yet':'Aucun projet pour l’instant',
