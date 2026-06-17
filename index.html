@@ -371,6 +371,10 @@ tr:hover .row-actions{opacity:1}
 .hero-strip .hero-add{display:flex;width:100%;flex:none;aspect-ratio:16/9;break-inside:avoid;margin:0 0 12px}
 @media(max-width:980px){.hero-strip{column-count:2}}
 @media(max-width:560px){.hero-strip{column-count:1}}
+.hero-uploading{background:#FCFBF7;border:1.5px dashed #D6CFC0}
+.hero-up{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:170px;color:var(--muted);font-size:12.5px;padding:18px;text-align:center}
+.spin{width:24px;height:24px;border:3px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 
 .hero-strip.dragover,.plan-strip.dragover,.board-grid.dragover{outline:2px dashed var(--accent);outline-offset:5px;border-radius:12px;background:#F6EFE7}
 .import-dz{border:1.5px dashed #CFC8B8;border-radius:10px;background:#FCFBF7;padding:13px 16px;text-align:center;color:var(--muted);font-size:12.5px;cursor:pointer;margin:8px 0 4px;transition:border-color .15s,background .15s}
@@ -1343,7 +1347,9 @@ function renderProjectDetail(){
   html+=`<div class="sec-head" style="padding-top:14px"><h3 class="serif">${room.name} · Renders</h3><span class="cnt">${room.renders.length}</span>
     <span class="micro" style="margin-left:4px">visuals shown to the client — run AI takeoff straight from a render</span></div>
   <div class="hero-strip" ondragover="dragOn(event)" ondragleave="dragOff(event)" ondrop="dropRenders(event)">
-    ${room.renders.map((h,ix)=>`<div class="hero-card">
+    ${room.renders.map((h,ix)=> h.uploading
+      ? `<div class="hero-card hero-uploading"><div class="hero-up"><span class="spin"></span><div>Téléversement…</div><div class="micro">${(h.note||'').replace(/</g,'&lt;')}</div></div></div>`
+      : `<div class="hero-card">
       <img src="${h.src}" onclick="openAnnot('render',${ix})" style="cursor:crosshair">
       <button class="hero-ai" onclick="event.stopPropagation();heroTakeoff(${ix})">⚡ AI takeoff</button>
       ${(h.annotations&&h.annotations.length)?`<span class="hero-annot-badge">✎ ${h.annotations.length}</span>`:''}
@@ -1483,8 +1489,7 @@ function readImages(fileList, cb){
 }
 function dropRenders(e){
   e.preventDefault(); dragOff(e);
-  const room=curRoom(); if(!room){ toast('Open a room first'); return; }
-  readImages(e.dataTransfer.files,(src,note)=>{ (room.renders=room.renders||[]).push({src,note,shared:true}); renderProjectDetail(); toast('Render added'); });
+  addRenderFiles(curRoom(), e.dataTransfer.files);
 }
 function dropPlans(e){
   e.preventDefault(); dragOff(e);
@@ -1497,17 +1502,22 @@ function dropBoard(e,pid,si){
   readImages(e.dataTransfer.files,(src,note)=>{ BOARDS[pid][si].images.push({src,note}); renderBoards(); toast('Image added'); });
 }
 /* ---- room hero renders ---- */
+async function addRenderFiles(room, files){
+  if(!room){ toast('Open a room first'); return; }
+  const imgs=[...(files||[])].filter(f=>f.type && f.type.startsWith('image/'));
+  if(!imgs.length){ toast('Image files only'); return; }
+  room.renders=room.renders||[];
+  const slots=imgs.map(f=>{ const o={src:'', note:f.name.replace(/\.\w+$/,''), shared:true, uploading:true}; room.renders.push(o); return o; });
+  renderProjectDetail();
+  for(let k=0;k<imgs.length;k++){
+    let url=''; try{ url=await uploadImage(imgs[k]); }catch(e){}
+    if(url){ slots[k].src=url; slots[k].uploading=false; renderProjectDetail(); scheduleSave(); toast('Render added'); }
+    else { const i=room.renders.indexOf(slots[k]); if(i>=0) room.renders.splice(i,1); renderProjectDetail(); toast('Upload failed — try again'); }
+  }
+}
 function heroUpload(){
   const inp=$('planFile');
-  inp.onchange=e=>{
-    const room=curRoom();
-    [...e.target.files].forEach(async f=>{
-      if(!f.type.startsWith('image/')){ toast('Image files only'); return; }
-      const url=await uploadImage(f);
-      (room.renders=room.renders||[]).push({src:url, note:f.name.replace(/\.\w+$/,''), shared:true}); renderProjectDetail(); scheduleSave();
-    });
-    inp.value='';
-  };
+  inp.onchange=e=>{ addRenderFiles(curRoom(), e.target.files); inp.value=''; };
   inp.click();
 }
 function editHero(ix){
