@@ -198,6 +198,7 @@ tr:hover .row-actions{opacity:1}
 .cp-titlerow .cp-sub{color:var(--muted);font-size:13.5px;margin-top:3px}
 #clientPortal .cp-body{max-width:1120px;margin:26px auto 0;padding:0 32px 80px}
 @media(max-width:680px){.cp-cover{height:200px}.cp-logo{width:68px;height:68px;font-size:20px;bottom:-22px}.cp-titlerow{padding-left:100px}.cp-titlerow h1{font-size:27px}}
+.cp-search{width:100%;max-width:420px;padding:9px 13px;border-radius:99px;margin-bottom:16px}
 .cp-summary{display:flex;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 22px;margin-bottom:18px;box-shadow:var(--shadow)}
 .cp-summary>div{flex:1;display:flex;align-items:center;gap:12px;min-width:0}
 .cp-summary .s-ic{width:40px;height:40px;border-radius:50%;border:2px solid var(--accent);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
@@ -684,6 +685,7 @@ tr:hover .row-actions{opacity:1}
     </div>
   </div>
   <div class="cp-body">
+    <input id="cpSearch" class="cp-search" placeholder="🔍 Search items…" oninput="portalSearch=this.value;renderPortalRemote()">
     <div class="cp-stats" id="cpStats"></div>
     <div id="cpRooms"></div>
   </div>
@@ -1056,7 +1058,7 @@ function closePreview(){
   $('clientPortal').classList.add('hidden'); $('clientPortal').style.paddingTop='';
   $('app').classList.remove('hidden');
 }
-let portalFilter='all'; let portalCanApprove=true;
+let portalFilter='all'; let portalCanApprove=true; let portalSearch='';
 function setPortalFilter(f){ portalFilter=f; renderPortalRemote(); }
 function cpPropCard(i){
   const st=i.status||'Draft';
@@ -1097,7 +1099,8 @@ function renderPortalRemote(){
   const counts={all:all.length, Sent:pending.length, Approved:approved.length, Declined:all.filter(i=>i.status==='Declined').length};
   $('cpStats').innerHTML='';
   const tab=(k,l)=>`<button class="cp-tab ${portalFilter===k?'active':''}" onclick="setPortalFilter('${k}')">${l}<span class="cnt">${k==='all'?counts.all:(counts[k]||0)}</span></button>`;
-  const match=i=> portalFilter==='all' ? true : i.status===portalFilter;
+  const _sq=portalSearch.trim().toLowerCase();
+  const match=i=> (portalFilter==='all' || i.status===portalFilter) && (!_sq || [i.name,i.brand,i.supplier,i.section,i.note].filter(Boolean).join(' ').toLowerCase().includes(_sq));
   let html=`<div class="cp-summary">
       <div><span class="s-ic">✓</span><div><div class="s-num">${pricingOn?fmt(totalAppr):'—'}</div><div class="s-lbl">Total approved</div></div></div>
       <div><span class="s-ic">▤</span><div><div class="s-num">${pricingOn?fmt(totalProp):'—'}</div><div class="s-lbl">Total proposed</div></div></div>
@@ -1306,6 +1309,7 @@ function renderProjectDetail(){
   let html='';
   updateApprDot(p);
   if(schedView==='approvals'){ wrap.innerHTML=approvalsHTML(p); if(LANG==='fr') applyLang(); return; }
+  if(schedSearch.trim()){ wrap.innerHTML=searchResultsHTML(p, schedSearch.trim()); if(LANG==='fr') applyLang(); return; }
   /* floor-level floorplan gallery */
   floor.plans=floor.plans||[];
   html+=`<div class="sec-head" style="padding-top:4px">
@@ -1380,6 +1384,19 @@ function renderProjectDetail(){
       <span>Client total: <b>${fmt(price)}</b></span></div>`;
   }
   wrap.innerHTML=html;
+}
+function searchResultsHTML(p,q){
+  const ql=q.toLowerCase();
+  const m=i=>[i.name,i.brand,i.supplier,i.cat,getSection(i),i.sku,i.note,i.details].filter(Boolean).join(' ').toLowerCase().includes(ql);
+  let blocks=[], count=0;
+  (p.floors||[]).forEach(f=>(f.rooms||[]).forEach(r=>{
+    const its=(r.items||[]).filter(m); if(!its.length) return; count+=its.length;
+    blocks.push(`<div class="sec-head"><h3 class="serif">${f.name} · ${r.name}</h3><span class="cnt">${its.length}</span></div>`+
+      `<div class="card"><table class="sched">${schedView==='financial'?finHead():sumHead()}<tbody>`+
+      its.map((i,ix)=> schedView==='financial'?finRow(i,p,getSection(i),ix):sumRow(i,p,getSection(i),ix)).join('')+`</tbody></table></div>`);
+  }));
+  const head=`<div class="sec-head" style="padding-top:4px"><h3 class="serif">Search</h3><span class="cnt">${count}</span><span class="micro" style="margin-left:4px">results across the project</span> <button class="btn-ghost btn-sm" style="margin-left:auto" onclick="$('schedSearch').value='';schedSearch='';renderProjectDetail()">Clear</button></div>`;
+  return head + (count? blocks.join('') : `<div class="empty card" style="margin-top:14px"><div class="big">No results</div>No items match your search.</div>`);
 }
 function sumHead(){return `<thead><tr><th style="width:27%">Item</th><th>Brand</th><th>Dimensions</th><th>Col · Fin · Mat</th><th>Qty</th><th>Lead time</th><th>Supplier</th><th>Status</th><th></th></tr></thead>`;}
 function finHead(){return `<thead><tr><th style="width:27%">Item</th><th>Qty</th><th style="text-align:right">Trade (unit)</th><th>Markup</th><th>Tax</th><th style="text-align:right">Client (unit)</th><th style="text-align:right">Line total</th><th>Status</th><th></th></tr></thead>`;}
@@ -2458,7 +2475,7 @@ const FR = {
   'Product attachments':'Pièces jointes produit','Trade price € (your cost)':'Prix d’achat (votre coût)','RRP €':'PVC',
   'Item / Product':'Article / Produit','SKU / Ref':'Réf / SKU','Trade / cost':'Achat / coût','Item / Product ':'Article / Produit',
   // portal
-  'CLIENT SPACE':'ESPACE CLIENT','Total investment':'Investissement total','Total approved':'Total approuvé','Total proposed':'Total proposé','Awaiting approval':'En attente','All':'Tous','To approve':'À approuver','Proposed':'Proposé','Nothing here':'Rien ici','Approved selections':'Sélections approuvées','Approvals':'Approbations','History':'Historique','approved':'approuvé','marked for review':'à revoir','sent for approval':'envoyé pour validation','left a comment':'a laissé un commentaire','updated':'mis à jour','No comment yet.':'Aucun commentaire.','Reply':'Répondre','Reply to the client…':'Répondre au client…','No activity yet':'Aucune activité','approvals & client comments — reply inline, the conversation stays on the item':'approbations & commentaires clients — répondez ici, la conversation reste attachée à l’article','Approvals & client comments will appear here once items are sent.':'Les approbations et commentaires apparaîtront ici une fois les articles envoyés.','You':'Vous','💬 Comment':'💬 Commenter','Comment sent':'Commentaire envoyé','Studio':'Studio','✉ Tout envoyer':'✉ Tout envoyer','Open a project':'Ouvrez un projet','Share your schedule':'Partager le planning','Publish to client portal':'Publier dans le portail client','Client link':'Lien client','Access code':'Code d’accès','Permissions — what the client sees':'Permissions — ce que voit le client','Pricing':'Prix','Details & notes':'Détails & notes','Product links':'Liens produit','Client can approve / decline':'Le client peut approuver / refuser','Hidden fields are removed on the server — clients can never access them.':'Les champs masqués sont retirés côté serveur — le client n’y a jamais accès.','Close':'Fermer','👁 Preview':'👁 Aperçu',
+  'CLIENT SPACE':'ESPACE CLIENT','Total investment':'Investissement total','Total approved':'Total approuvé','Total proposed':'Total proposé','Awaiting approval':'En attente','All':'Tous','To approve':'À approuver','Proposed':'Proposé','Nothing here':'Rien ici','Approved selections':'Sélections approuvées','Approvals':'Approbations','History':'Historique','approved':'approuvé','marked for review':'à revoir','sent for approval':'envoyé pour validation','left a comment':'a laissé un commentaire','updated':'mis à jour','No comment yet.':'Aucun commentaire.','Reply':'Répondre','Reply to the client…':'Répondre au client…','No activity yet':'Aucune activité','approvals & client comments — reply inline, the conversation stays on the item':'approbations & commentaires clients — répondez ici, la conversation reste attachée à l’article','Approvals & client comments will appear here once items are sent.':'Les approbations et commentaires apparaîtront ici une fois les articles envoyés.','You':'Vous','💬 Comment':'💬 Commenter','Search':'Recherche','results across the project':'résultats dans tout le projet','Clear':'Effacer','No results':'Aucun résultat','No items match your search.':'Aucun article ne correspond.','Comment sent':'Commentaire envoyé','Studio':'Studio','✉ Tout envoyer':'✉ Tout envoyer','Open a project':'Ouvrez un projet','Share your schedule':'Partager le planning','Publish to client portal':'Publier dans le portail client','Client link':'Lien client','Access code':'Code d’accès','Permissions — what the client sees':'Permissions — ce que voit le client','Pricing':'Prix','Details & notes':'Détails & notes','Product links':'Liens produit','Client can approve / decline':'Le client peut approuver / refuser','Hidden fields are removed on the server — clients can never access them.':'Les champs masqués sont retirés côté serveur — le client n’y a jamais accès.','Close':'Fermer','👁 Preview':'👁 Aperçu',
   'Awaiting your review':'En attente de votre avis','tap approve or decline below':'approuvez ou refusez ci-dessous',
   '✓ Approve':'✓ Approuver','Decline':'Refuser','Nothing to review yet':'Rien à examiner pour l’instant',
   'Your designer will share selections here.':'Votre designer partagera les sélections ici.','No project yet':'Aucun projet pour l’instant',
