@@ -181,6 +181,57 @@ tr:hover .row-actions{opacity:1}
 .cp-hero p{color:#BFB4A3;margin-top:8px;max-width:560px}
 .cp-body{max-width:1080px;margin:-34px auto 0;padding:0 40px 80px}
 .cp-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px}
+#clientPortal{background:var(--bg);min-height:100vh}
+.cp-topnav{display:flex;justify-content:space-between;align-items:center;padding:16px 32px;max-width:1120px;margin:0 auto}
+.cp-topnav .brand{font-family:'Cormorant Garamond',serif;font-size:22px;letter-spacing:.05em;color:var(--ink)}
+.cp-topnav-r{display:flex;align-items:center;gap:14px}
+.cp-hero2{max-width:1120px;margin:0 auto;padding:0 32px}
+.cp-cover{position:relative;height:300px;border-radius:16px;overflow:hidden;background:linear-gradient(135deg,#9A6B4F,#5C6B57);background-size:cover;background-position:center;box-shadow:var(--shadow)}
+.cp-who-chip{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.94);border-radius:99px;padding:6px 14px 6px 8px;font-size:13px;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:8px;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+.cp-who-chip::before{content:'';width:20px;height:20px;border-radius:50%;background:var(--olive);flex-shrink:0}
+.cp-who-chip:empty{display:none}
+.cp-logo{position:absolute;left:22px;bottom:-28px;width:92px;height:92px;border-radius:16px;background:#EFE9DC;border:4px solid var(--bg);box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:26px;color:var(--accent-dark)}
+.cp-cover-upload{position:absolute;right:16px;bottom:16px;background:rgba(34,31,26,.72);color:#fff;border:none;border-radius:9px;padding:7px 13px;font-size:12px;cursor:pointer;backdrop-filter:blur(3px)}
+.cp-cover-upload:hover{background:#1F1D1A}
+.cp-titlerow{padding:40px 6px 0 130px}
+.cp-titlerow h1{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:600;line-height:1.1}
+.cp-titlerow .cp-sub{color:var(--muted);font-size:13.5px;margin-top:3px}
+#clientPortal .cp-body{max-width:1120px;margin:26px auto 0;padding:0 32px 80px}
+@media(max-width:680px){.cp-cover{height:200px}.cp-logo{width:68px;height:68px;font-size:20px;bottom:-22px}.cp-titlerow{padding-left:100px}.cp-titlerow h1{font-size:27px}}
+.cp-summary{display:flex;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 22px;margin-bottom:18px;box-shadow:var(--shadow)}
+.cp-summary>div{flex:1;display:flex;align-items:center;gap:12px;min-width:0}
+.cp-summary .s-ic{width:40px;height:40px;border-radius:50%;border:2px solid var(--accent);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.cp-summary .s-num{font-family:'Cormorant Garamond',serif;font-size:25px;font-weight:600;color:var(--ink);line-height:1.1}
+.cp-summary .s-lbl{color:var(--muted);font-size:12px}
+.cp-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.cp-tab{padding:8px 15px;border-radius:99px;border:1px solid var(--line);background:#fff;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer}
+.cp-tab.active{background:var(--olive);color:#fff;border-color:var(--olive)}
+.cp-tab .cnt{opacity:.7;margin-left:5px;font-size:11.5px}
+.cp-prop-list{display:flex;flex-direction:column;gap:12px}
+.cp-prop{display:flex;align-items:center;gap:16px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:13px 16px;box-shadow:var(--shadow);transition:box-shadow .12s}
+.cp-prop:hover{box-shadow:0 4px 10px rgba(34,31,26,.09)}
+.cp-prop-thumb{width:72px;height:72px;border-radius:10px;overflow:hidden;flex-shrink:0;background:#EFE9DC;display:flex;align-items:center;justify-content:center}
+.cp-prop-thumb img{width:100%;height:100%;object-fit:cover}
+.cp-prop-emoji{font-size:30px}
+.cp-prop-main{flex:1;min-width:0}
+.cp-prop-code{font-family:ui-monospace,monospace;font-size:10.5px;color:var(--accent);letter-spacing:.04em}
+.cp-prop-name{font-weight:600;font-size:15px;margin:1px 0}
+.cp-prop-meta{color:var(--muted);font-size:12px}
+.cp-prop-price{text-align:right;min-width:110px}
+.cp-prop-amount{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600}
+.cp-prop-lbl{color:var(--muted);font-size:11px}
+.cp-prop-action{display:flex;flex-direction:column;align-items:flex-end;gap:6px;min-width:132px}
+.cp-thread{margin-top:8px;display:flex;flex-direction:column;gap:6px}
+.cp-cmt{font-size:12.5px;border-left:3px solid var(--line);padding:5px 10px;background:#FBFAF6;border-radius:0 7px 7px 0}
+.cp-cmt.studio{border-left-color:var(--accent);background:#F6EFE7}
+.cp-cmt b{color:var(--muted);font-weight:600;margin-right:5px}
+@media(max-width:760px){.cp-summary{flex-direction:column;gap:14px}.cp-prop{flex-wrap:wrap}.cp-prop-price{min-width:0;text-align:left}.cp-prop-action{min-width:0;flex-direction:row;align-items:center;flex-wrap:wrap}.cp-prop-main{flex-basis:55%}}
+.share-row{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.share-row b{font-weight:600}
+.share-perm{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-top:1px solid var(--line)}
+.share-perm:first-of-type{border-top:none}
+.share-perm b{font-weight:500;font-size:13.5px}
+.share-perm .hint{color:var(--muted);font-size:11.5px;display:block;font-weight:400}
 .cp-room{margin-bottom:26px}
 .cp-floor{margin-bottom:14px}
 .cp-floor-title{font-family:'Cormorant Garamond',serif;font-size:28px;margin:16px 4px 10px;padding-top:14px;border-top:1px solid var(--line)}
@@ -322,6 +373,27 @@ tr:hover .row-actions{opacity:1}
 .import-dz.dragover{border-color:var(--accent);background:#F6EFE7;color:var(--accent)}
 .import-dz b{color:var(--ink)}.import-dz:hover b{color:var(--accent)}
 .empty{padding:46px;text-align:center;color:var(--muted)}
+.appr-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--gold);vertical-align:middle}
+.appr-feed{display:flex;flex-direction:column;gap:4px}
+.appr-row{display:flex;gap:14px;padding:16px 4px;border-bottom:1px solid var(--line)}
+.appr-row:last-child{border-bottom:none}
+.appr-thumb{position:relative;flex-shrink:0}
+.appr-thumb .swatch{width:46px;height:46px}
+.appr-badge{position:absolute;right:-6px;top:-6px;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;border:2px solid var(--bg)}
+.appr-badge.ok{background:var(--green)}
+.appr-badge.rev{background:var(--gold)}
+.appr-badge.sent{background:var(--olive)}
+.appr-badge.cmt{background:#fff;font-size:12px}
+.appr-main{flex:1;min-width:0}
+.appr-title{font-size:14px}.appr-title .appr-act{color:var(--muted)}
+.appr-thread{display:flex;flex-direction:column;gap:8px;margin:10px 0}
+.appr-msg{max-width:560px}
+.appr-msg.studio{margin-left:30px}
+.appr-who{font-size:11px;color:var(--muted);margin-bottom:2px}
+.appr-bubble{border-left:3px solid var(--line);padding:7px 12px;background:#FBFAF6;border-radius:0 8px 8px 0;font-size:13px}
+.appr-msg.studio .appr-bubble{border-left-color:var(--accent);background:#F6EFE7}
+.appr-reply{display:flex;gap:8px;margin-top:8px;max-width:560px}
+.appr-reply input{flex:1}
 .empty .big{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--ink);margin-bottom:4px}
 .section-gap{margin-bottom:26px}
 .two-col{display:grid;grid-template-columns:1.6fr 1fr;gap:22px;align-items:start}
@@ -478,6 +550,8 @@ tr:hover .row-actions{opacity:1}
             </div>
           </div>
           <button class="btn-ghost" onclick="openRoomModal()">+ Add room</button>
+          <button class="btn-ghost" onclick="openShareModal()">🔗 Partager</button>
+          <button class="btn-ghost" onclick="uploadProjectCover()">🖼 Couverture</button>
           <button class="btn-ghost" onclick="previewPortal()">👁 Aperçu client</button>
           <button class="btn-accent" onclick="openDrawer()">New ⌘N</button>
         </div>
@@ -492,6 +566,7 @@ tr:hover .row-actions{opacity:1}
         <div class="view-tabs">
           <button class="view-tab active" id="vtSummary" onclick="setSchedView('summary')">Summary</button>
           <button class="view-tab" id="vtFinancial" onclick="setSchedView('financial')">Financial</button>
+          <button class="view-tab" id="vtApprovals" onclick="setSchedView('approvals')">Approvals <span id="vtApprDot" class="appr-dot hidden"></span></button>
         </div>
         <input class="sched-search" id="schedSearch" placeholder="🔍 Search items…" oninput="schedSearch=this.value;renderProjectDetail()">
       </div>
@@ -585,19 +660,22 @@ tr:hover .row-actions{opacity:1}
 <!-- ================= CLIENT PORTAL ================= -->
 <div id="previewBar" class="hidden"></div>
 <div id="clientPortal" class="hidden">
-  <div class="cp-head">
-    <div class="cp-nav">
-      <div class="brand">VIZIR<span>·</span>ID <span style="font-family:Inter;font-size:11px;letter-spacing:.1em;color:#9A937F;margin-left:8px">CLIENT SPACE</span></div>
-      <div style="display:flex;align-items:center;gap:16px;font-size:13px">
-        <span id="cpWho"></span>
-        <span class="seg" data-set="lang"><b class="opt" data-v="en" onclick="setLang('en')">EN</b><b class="opt" data-v="fr" onclick="setLang('fr')">FR</b></span>
-        <button onclick="logout()" style="color:#D8B98C;text-decoration:underline;font-size:12.5px">Sign out</button>
-      </div>
+  <div class="cp-topnav">
+    <div class="brand">VIZIR<span style="color:var(--gold)">·</span>ID <span style="font-family:Inter;font-size:10.5px;letter-spacing:.1em;color:var(--muted);margin-left:6px">CLIENT SPACE</span></div>
+    <div class="cp-topnav-r">
+      <span class="seg" data-set="lang"><b class="opt" data-v="en" onclick="setLang('en')">EN</b><b class="opt" data-v="fr" onclick="setLang('fr')">FR</b></span>
+      <button onclick="logout()" style="color:var(--accent);text-decoration:underline;font-size:12.5px">Sign out</button>
     </div>
-    <div class="cp-hero">
-      <div class="eyebrow" id="cpType"></div>
+  </div>
+  <div class="cp-hero2">
+    <div class="cp-cover" id="cpCover">
+      <span class="cp-who-chip" id="cpWho"></span>
+      <div class="cp-logo" id="cpLogo"></div>
+      <button class="cp-cover-upload hidden" id="cpCoverBtn" onclick="uploadProjectCover()">🖼 Changer la couverture</button>
+    </div>
+    <div class="cp-titlerow">
       <h1 id="cpProject"></h1>
-      <p>Prepared by Atelier Doro. Review each selection and approve directly — your designer is notified instantly.</p>
+      <div class="cp-sub" id="cpType"></div>
     </div>
   </div>
   <div class="cp-body">
@@ -885,8 +963,49 @@ function cpRemoteRow(i){
       : statusTag(i.status)+(i.status==='Declined'?` <button class="btn-approve" onclick="portalDecide('${i.id}','Approved')">✓ Approve</button>`:'') }</div></div>`;
 }
 let portalPreview=false, portalPreviewDrafts=true;
+function uploadProjectCover(){
+  const inp=$('planFile'); if(!inp) return;
+  inp.onchange=async e=>{
+    const f=e.target.files[0]; if(!f||!f.type.startsWith('image/')){ toast('Image uniquement'); inp.value=''; return; }
+    const url=await uploadImage(f);
+    const p=projById(curProjectId);
+    if(p){ p.coverImage=url; scheduleSave(); toast('Couverture mise à jour');
+      if(portalPreview){ portalData=buildPortalPreview(p); renderPortalRemote(); } }
+    inp.value='';
+  };
+  inp.click();
+}
+function projShare(p){ if(!p.share) p.share={published:true,pricing:true,brand:true,supplier:true,details:true,url:true,canApprove:true}; return p.share; }
+function toggleShare(k,el){ const sh=projShare(projById(curProjectId)); const cur=sh[k]!==false; sh[k]=!cur; el.classList.toggle('on', sh[k]); scheduleSave(); }
+function openShareModal(){
+  const p=projById(curProjectId); if(!p){ toast('Open a project'); return; }
+  const sh=projShare(p); const c=clientOf(p);
+  if(!p.shareToken) p.shareToken=crypto.randomUUID();
+  if(c && !c.accessCode && !c.access_code) c.accessCode=Math.random().toString(36).slice(2,8);
+  const link=location.origin+location.pathname+'?p='+p.shareToken; const code=c?(c.accessCode||c.access_code):'';
+  const esc=v=>String(v==null?'':v).replace(/"/g,'&quot;');
+  const tog=(k,label,hint)=>`<div class="share-perm"><div><b>${label}</b>${hint?`<span class="hint">${hint}</span>`:''}</div><span class="switch ${sh[k]!==false?'on':''}" onclick="toggleShare('${k}',this)"></span></div>`;
+  openModal(`<div class="modal-head"><h3>Share your schedule</h3><button class="icon-btn" onclick="closeModal()">✕</button></div>
+  <div class="modal-body">
+    <div class="share-row"><span class="switch ${sh.published!==false?'on':''}" onclick="toggleShare('published',this)"></span> <b>Publish to client portal</b></div>
+    <div class="micro" style="margin:2px 0 14px">${c?('Client: <b>'+esc(c.name)+'</b>'):'Assign a client first to enable the portal.'}</div>
+    <label>Client link</label>
+    <div style="display:flex;gap:8px"><input id="shareLink" value="${esc(link)}" readonly><button class="btn-ghost btn-sm" onclick="copyShare('${esc(link)}','${esc(code)}')">Copy</button></div>
+    <label>Access code</label><input value="${esc(code)}" readonly style="max-width:170px">
+    <div class="sec-title" style="margin-top:18px">Permissions — what the client sees</div>
+    ${tog('pricing','Pricing','Show prices in the portal')}
+    ${tog('brand','Brand')}
+    ${tog('supplier','Supplier')}
+    ${tog('details','Details & notes','Specs, notes & dimensions')}
+    ${tog('url','Product links')}
+    ${tog('canApprove','Client can approve / decline')}
+    <p class="micro" style="margin-top:10px">Hidden fields are removed on the server — clients can never access them.</p>
+  </div>
+  <div class="modal-foot"><button class="btn-ghost" onclick="closeModal()">Close</button><button class="btn-accent" onclick="closeModal();previewPortal()">👁 Preview</button></div>`);
+}
 function buildPortalPreview(p){
-  const c=clientOf(p)||{};
+  const c=clientOf(p)||{}; const sh=projShare(p);
+  const on=k=>sh[k]!==false;
   const floors=(p.floors||[]).map(f=>({
     name:f.name,
     plans:(f.plans||[]).filter(pl=>pl.shared!==false).map(pl=>({src:pl.src,note:pl.note||''})),
@@ -894,13 +1013,16 @@ function buildPortalPreview(p){
       name:r.name,
       renders:(r.renders||[]).filter(h=>h.shared!==false).map(h=>({src:h.src,note:h.note||''})),
       items:(r.items||[]).filter(i=>portalPreviewDrafts || i.status!=='Draft').map(i=>({
-        id:i.id, name:i.name, section:getSection(i), brand:i.brand||'', supplier:i.supplier||'',
-        dims:(dimsOf(i)!=='—'?dimsOf(i):''), qty:i.qty||1, lead:i.lead||'', note:i.note||'', clientComment:i.clientComment||'',
-        status:i.status, price:Math.round(clientPrice(i,p))
+        id:i.id, name:i.name, section:getSection(i),
+        brand:on('brand')?(i.brand||''):'', supplier:on('supplier')?(i.supplier||''):'',
+        dims:on('details')?(dimsOf(i)!=='—'?dimsOf(i):''):'', qty:i.qty||1, lead:i.lead||'',
+        note:on('details')?(i.note||''):'', clientComment:i.clientComment||'',
+        status:i.status, price:on('pricing')?Math.round(clientPrice(i,p)):null, cat:i.cat||'', image:(i.images&&i.images[0])||'',
+        url:on('url')?(i.url||''):'', comments:(i.comments||[]).map(m=>({by:m.by,text:m.text}))
       }))
     }))
   }));
-  return {project:{name:p.name,type:p.type||''}, client:{name:c.name||''}, floors};
+  return {project:{name:p.name,type:p.type||'',cover:p.coverImage||''}, client:{name:c.name||''}, pricing:on('pricing'), canApprove:on('canApprove'), published:on('published'), floors};
 }
 function previewPortal(){
   const p=projById(curProjectId); if(!p){ toast('Open a project'); return; }
@@ -920,33 +1042,58 @@ function closePreview(){
   $('clientPortal').classList.add('hidden'); $('clientPortal').style.paddingTop='';
   $('app').classList.remove('hidden');
 }
+let portalFilter='all'; let portalCanApprove=true;
+function setPortalFilter(f){ portalFilter=f; renderPortalRemote(); }
+function cpPropCard(i){
+  const st=i.status||'Draft';
+  const thumb = i.image ? `<img src="${i.image}">` : `<div class="cp-prop-emoji">${CAT_EMOJI[i.cat]||'📦'}</div>`;
+  const actions = !portalCanApprove ? '' : (st==='Sent'
+    ? `<button class="btn-approve" onclick="portalDecide('${i.id}','Approved')">✓ Approve</button><button class="btn-decline" onclick="portalDecide('${i.id}','Declined')">Decline</button>`
+    : (st==='Declined'? `<button class="btn-approve" onclick="portalDecide('${i.id}','Approved')">✓ Approve</button>`:''));
+  const meta=[i._floor,i._room,'Qty '+i.qty].concat(i.brand?[i.brand]:[]).concat(i.supplier?[i.supplier]:[]).concat(i.lead?[i.lead]:[]).join(' · ');
+  const priceBlock=(i.price!=null)?`<div class="cp-prop-price"><div class="cp-prop-amount">${fmt(i.price)}</div><div class="cp-prop-lbl">Proposed</div></div>`:'';
+  return `<div class="cp-prop">
+    <div class="cp-prop-thumb">${thumb}</div>
+    <div class="cp-prop-main">
+      ${i.docCode?`<div class="cp-prop-code">${i.docCode}</div>`:''}
+      <div class="cp-prop-name">${i.name}</div>
+      <div class="cp-prop-meta">${meta}</div>
+      ${i.note?`<div class="cp-note">${i.note}</div>`:''}
+      ${(i.comments&&i.comments.length)?`<div class="cp-thread">${i.comments.map(m=>`<div class="cp-cmt ${m.by}"><b>${m.by==='client'?'You':'Studio'}</b> ${(m.text||'').replace(/</g,'&lt;')}</div>`).join('')}</div>`:''}
+    </div>
+    ${priceBlock}
+    <div class="cp-prop-action">${statusTag(st)}${actions}<button class="btn-ghost btn-sm" onclick="portalComment('${i.id}')">💬 Comment</button></div>
+  </div>`;
+}
 function renderPortalRemote(){
   const d=portalData; if(!d) return;
   $('clientPortal').classList.remove('hidden');
   $('cpWho').textContent=d.client.name||'';
   $('cpType').textContent=(d.project.type||'')+' · prepared for '+(d.client.name||'');
   $('cpProject').textContent=d.project.name||'';
-  const items=d.floors.flatMap(f=>f.rooms.flatMap(r=>r.items));
-  const total=items.reduce((a,i)=>a+i.price,0), appr=items.filter(i=>i.status==='Approved');
-  $('cpStats').innerHTML=[
-    [fmt(total),'Total investment','across '+items.length+' selections'],
-    [appr.length+' / '+items.length,'Approved selections',fmt(appr.reduce((a,i)=>a+i.price,0))+' confirmed'],
-    [items.filter(i=>i.status==='Sent').length,'Awaiting your review','tap approve or decline below'],
-  ].map(([n,l,sx])=>`<div class="stat"><div class="num">${n}</div><div class="lbl">${l}</div><div class="delta" style="color:var(--muted)">${sx}</div></div>`).join('');
-  $('cpRooms').innerHTML = d.floors.map(f=>{
-    const fplans=f.plans||[];
-    const roomsHtml=f.rooms.map(r=>{
-      if(!r.items.length && !(r.renders||[]).length) return '';
-      const rt=r.items.reduce((a,i)=>a+i.price,0);
-      return `<div class="cp-room"><div class="cp-room-head"><h2>${r.name}</h2><div class="rt">${r.items.length} selections · <b style="color:var(--ink)">${fmt(rt)}</b></div></div>
-        ${(r.renders||[]).length?`<div class="cp-heroes">${r.renders.map(h=>`<div class="hero-card" onclick="viewImage('${h.src}','')"><img src="${h.src}"><div class="hero-cap">${h.note||''}</div></div>`).join('')}</div>`:''}
-        ${r.items.length?`<div class="card">${r.items.map(cpRemoteRow).join('')}</div>`:''}</div>`;
-    }).join('');
-    if(!fplans.length && !roomsHtml.trim()) return '';
-    return `<div class="cp-floor"><div class="cp-floor-title">${f.name}</div>
-      ${fplans.length?`<div class="cp-plans">${fplans.map(pl=>`<div class="plan-card" onclick="viewImage('${pl.src}','')"><img src="${pl.src}"><div class="bi-note">${pl.note||''}</div></div>`).join('')}</div>`:''}
-      ${roomsHtml}</div>`;
-  }).join('') || '<div class="empty card"><div class="big">Nothing to review yet</div></div>';
+  const _cov=$('cpCover'); if(_cov) _cov.style.backgroundImage = d.project.cover ? 'url("'+d.project.cover+'")' : '';
+  const _logo=$('cpLogo'); if(_logo) _logo.textContent=(d.project.name||'').split(/\s+/).filter(Boolean).map(w=>w[0]).slice(0,2).join('').toUpperCase();
+  const _cb=$('cpCoverBtn'); if(_cb) _cb.classList.toggle('hidden', !portalPreview);
+  const all=[]; d.floors.forEach(f=>f.rooms.forEach(r=>(r.items||[]).forEach(i=>all.push(Object.assign({},i,{_floor:f.name,_room:r.name})))));
+  portalCanApprove = d.canApprove!==false;
+  const pricingOn = d.pricing!==false;
+  const totalProp=all.reduce((a,i)=>a+(i.price||0),0);
+  const approved=all.filter(i=>i.status==='Approved'); const totalAppr=approved.reduce((a,i)=>a+(i.price||0),0);
+  const pending=all.filter(i=>i.status==='Sent');
+  const counts={all:all.length, Sent:pending.length, Approved:approved.length, Declined:all.filter(i=>i.status==='Declined').length};
+  $('cpStats').innerHTML='';
+  const visuals=[]; d.floors.forEach(f=>{ (f.plans||[]).forEach(pl=>visuals.push(pl)); f.rooms.forEach(r=>(r.renders||[]).forEach(h=>visuals.push(h))); });
+  const tab=(k,l)=>`<button class="cp-tab ${portalFilter===k?'active':''}" onclick="setPortalFilter('${k}')">${l}<span class="cnt">${k==='all'?counts.all:(counts[k]||0)}</span></button>`;
+  const filtered = all.filter(i=> portalFilter==='all' ? true : i.status===portalFilter);
+  let html=`<div class="cp-summary">
+      <div><span class="s-ic">✓</span><div><div class="s-num">${pricingOn?fmt(totalAppr):'—'}</div><div class="s-lbl">Total approved</div></div></div>
+      <div><span class="s-ic">▤</span><div><div class="s-num">${pricingOn?fmt(totalProp):'—'}</div><div class="s-lbl">Total proposed</div></div></div>
+      <div><span class="s-ic">◷</span><div><div class="s-num">${pending.length}</div><div class="s-lbl">Awaiting approval</div></div></div>
+    </div>`;
+  if(visuals.length) html+=`<div class="cp-heroes" style="margin-bottom:16px">${visuals.map(v=>`<div class="hero-card" onclick="viewImage('${v.src}','')"><img src="${v.src}"><div class="hero-cap">${v.note||''}</div></div>`).join('')}</div>`;
+  html+=`<div class="cp-tabs">${tab('all','All')}${tab('Sent','To approve')}${tab('Approved','Approved')}${tab('Declined','Declined')}</div>`;
+  html+= filtered.length ? `<div class="cp-prop-list">${filtered.map(cpPropCard).join('')}</div>` : `<div class="empty card"><div class="big">Nothing here</div></div>`;
+  $('cpRooms').innerHTML=html;
   if(LANG==='fr') applyLang();
 }
 async function portalDecide(itemId, decision){
@@ -954,9 +1101,16 @@ async function portalDecide(itemId, decision){
   let comment='';
   if(decision==='Declined'){ comment=(prompt('Optional — tell your designer why (alternative, budget, colour…):','')||''); }
   try{ await sb.functions.invoke('portal',{body:{token:portalToken, code:portalCode, action:'decide', itemId, decision, comment}}); }catch(e){}
-  portalData.floors.forEach(f=>f.rooms.forEach(r=>r.items.forEach(i=>{ if(i.id===itemId){ i.status=decision; if(comment) i.clientComment=comment; } })));
+  portalData.floors.forEach(f=>f.rooms.forEach(r=>r.items.forEach(i=>{ if(i.id===itemId){ i.status=decision; if(comment){ i.clientComment=comment; i.comments=i.comments||[]; i.comments.push({by:'client',text:comment}); } } })));
   renderPortalRemote();
   toast(decision==='Approved'?'Approved — your designer is notified':'Declined — feedback sent');
+}
+function _portalFindItem(id){ for(const f of portalData.floors) for(const r of f.rooms){ const it=r.items.find(x=>x.id===id); if(it) return it; } return null; }
+async function portalComment(id){
+  const t=(prompt('Your comment / question:','')||'').trim(); if(!t) return;
+  if(!portalPreview){ try{ await sb.functions.invoke('portal',{body:{token:portalToken, code:portalCode, action:'comment', itemId:id, comment:t}}); }catch(e){} }
+  const it=_portalFindItem(id); if(it){ it.comments=it.comments||[]; it.comments.push({by:'client',text:t}); }
+  renderPortalRemote(); toast('Comment sent');
 }
 function toggleSidebar(force){
   const sb=document.querySelector('.sidebar'), ov=$('navOverlay');
@@ -1027,12 +1181,71 @@ function dimsOf(i){
   const p=[]; if(i.w)p.push('W '+i.w); if(i.l)p.push('L '+i.l); if(i.h)p.push('H '+i.h); if(i.d)p.push('D '+i.d);
   return p.length?p.join(' × ')+' mm':'—';
 }
+function itemThread(i){ if(!Array.isArray(i.comments)){ i.comments = i.clientComment ? [{by:'client',text:i.clientComment,ts:Date.now()}] : []; } return i.comments; }
+function apprActivity(p){
+  const acts=[];
+  (p.floors||[]).forEach(f=>(f.rooms||[]).forEach(r=>(r.items||[]).forEach(i=>{
+    const th=itemThread(i);
+    if(!th.length && !['Sent','Approved','Declined'].includes(i.status)) return;
+    const lastTs=th.length?(th[th.length-1].ts||0):0;
+    acts.push({i,r,f,th,lastTs});
+  })));
+  acts.sort((a,b)=> (b.lastTs - a.lastTs) || 0);
+  return acts;
+}
+function updateApprDot(p){
+  const dot=$('vtApprDot'); if(!dot) return;
+  const pending=apprActivity(p).some(a=> a.i.status==='Sent' || (a.th.length && a.th[a.th.length-1].by==='client'));
+  dot.classList.toggle('hidden', !pending);
+}
+function apprActionLabel(a){
+  const th=a.th, last=th[th.length-1];
+  if(last && last.by==='client') return 'left a comment';
+  if(a.i.status==='Approved') return 'approved';
+  if(a.i.status==='Declined') return 'marked for review';
+  if(a.i.status==='Sent') return 'sent for approval';
+  return 'updated';
+}
+function apprBadge(a){
+  if(a.i.status==='Approved') return '<span class="appr-badge ok">✓</span>';
+  if(a.i.status==='Declined') return '<span class="appr-badge rev">◉</span>';
+  const last=a.th[a.th.length-1];
+  if(last && last.by==='client') return '<span class="appr-badge cmt">💬</span>';
+  if(a.i.status==='Sent') return '<span class="appr-badge sent">◷</span>';
+  return '';
+}
+function approvalsHTML(p){
+  const c=clientOf(p)||{}; const cname=c.name||'Client';
+  const acts=apprActivity(p);
+  if(!acts.length) return '<div class="empty card" style="margin-top:18px"><div class="big">No activity yet</div>Approvals & client comments will appear here once items are sent.</div>';
+  let h=`<div class="sec-head" style="padding-top:6px"><h3 class="serif">History</h3><span class="cnt">${acts.length}</span><span class="micro" style="margin-left:4px">approvals & client comments — reply inline, the conversation stays on the item</span></div>`;
+  h+='<div class="appr-feed">';
+  acts.forEach(a=>{
+    const i=a.i;
+    const thread=a.th.map(m=>`<div class="appr-msg ${m.by}"><div class="appr-who">${m.by==='client'?cname:'You'}</div><div class="appr-bubble">${(m.text||'').replace(/</g,'&lt;')}</div></div>`).join('');
+    h+=`<div class="appr-row">
+      <div class="appr-thumb">${thumb(i)}${apprBadge(a)}</div>
+      <div class="appr-main">
+        <div class="appr-title"><b>${i.name}</b> <span class="appr-act">${apprActionLabel(a)}</span> <span class="micro">· ${a.f.name} / ${a.r.name}</span></div>
+        ${thread?`<div class="appr-thread">${thread}</div>`:'<div class="micro" style="margin:4px 0">No comment yet.</div>'}
+        <div class="appr-reply"><input id="rep-${i.id}" placeholder="Reply to the client…" onkeydown="if(event.key==='Enter')addReply('${i.id}')"><button class="btn-accent btn-sm" onclick="addReply('${i.id}')">Reply</button></div>
+      </div></div>`;
+  });
+  h+='</div>';
+  return h;
+}
+function addReply(id){
+  const inp=$('rep-'+id); if(!inp) return; const t=(inp.value||'').trim(); if(!t) return;
+  const f=findItem(id); if(!f) return;
+  itemThread(f.i).push({by:'studio',text:t,ts:Date.now()});
+  inp.value=''; renderProjectDetail(); scheduleSave(); toast('Reply added');
+}
 function thumb(i){
   if(i.images&&i.images[0]) return `<div class="swatch" style="padding:0;overflow:hidden"><img src="${i.images[0]}" style="width:100%;height:100%;object-fit:cover"></div>`;
   return swatch(i.cat);
 }
 let schedView='summary', schedSearch='';
-function setSchedView(v){ schedView=v; $('vtSummary').classList.toggle('active',v==='summary'); $('vtFinancial').classList.toggle('active',v==='financial'); renderProjectDetail(); }
+function setSchedView(v){ schedView=v; $('vtSummary').classList.toggle('active',v==='summary'); $('vtFinancial').classList.toggle('active',v==='financial'); $('vtApprovals').classList.toggle('active',v==='approvals'); renderProjectDetail(); }
 function toggleMenu(id){ $(id).classList.toggle('hidden'); }
 document.addEventListener('click',e=>{ if(!e.target.closest('.dd-wrap')) document.querySelectorAll('.dd-menu').forEach(m=>m.classList.add('hidden')); });
 
@@ -1062,6 +1275,8 @@ function renderProjectDetail(){
     + `<button class="room-tab" style="border-style:dashed" onclick="openFloorModal()">+ Floor</button>`;
   const wrap=$('schedSections');
   let html='';
+  updateApprDot(p);
+  if(schedView==='approvals'){ wrap.innerHTML=approvalsHTML(p); if(LANG==='fr') applyLang(); return; }
   /* floor-level floorplan gallery */
   floor.plans=floor.plans||[];
   html+=`<div class="sec-head" style="padding-top:4px">
@@ -2214,7 +2429,7 @@ const FR = {
   'Product attachments':'Pièces jointes produit','Trade price € (your cost)':'Prix d’achat (votre coût)','RRP €':'PVC',
   'Item / Product':'Article / Produit','SKU / Ref':'Réf / SKU','Trade / cost':'Achat / coût','Item / Product ':'Article / Produit',
   // portal
-  'CLIENT SPACE':'ESPACE CLIENT','Total investment':'Investissement total','Approved selections':'Sélections approuvées',
+  'CLIENT SPACE':'ESPACE CLIENT','Total investment':'Investissement total','Total approved':'Total approuvé','Total proposed':'Total proposé','Awaiting approval':'En attente','All':'Tous','To approve':'À approuver','Proposed':'Proposé','Nothing here':'Rien ici','Approved selections':'Sélections approuvées','Approvals':'Approbations','History':'Historique','approved':'approuvé','marked for review':'à revoir','sent for approval':'envoyé pour validation','left a comment':'a laissé un commentaire','updated':'mis à jour','No comment yet.':'Aucun commentaire.','Reply':'Répondre','Reply to the client…':'Répondre au client…','No activity yet':'Aucune activité','approvals & client comments — reply inline, the conversation stays on the item':'approbations & commentaires clients — répondez ici, la conversation reste attachée à l’article','Approvals & client comments will appear here once items are sent.':'Les approbations et commentaires apparaîtront ici une fois les articles envoyés.','You':'Vous','💬 Comment':'💬 Commenter','Comment sent':'Commentaire envoyé','Studio':'Studio','Share your schedule':'Partager le planning','Publish to client portal':'Publier dans le portail client','Client link':'Lien client','Access code':'Code d’accès','Permissions — what the client sees':'Permissions — ce que voit le client','Pricing':'Prix','Details & notes':'Détails & notes','Product links':'Liens produit','Client can approve / decline':'Le client peut approuver / refuser','Hidden fields are removed on the server — clients can never access them.':'Les champs masqués sont retirés côté serveur — le client n’y a jamais accès.','Close':'Fermer','👁 Preview':'👁 Aperçu',
   'Awaiting your review':'En attente de votre avis','tap approve or decline below':'approuvez ou refusez ci-dessous',
   '✓ Approve':'✓ Approuver','Decline':'Refuser','Nothing to review yet':'Rien à examiner pour l’instant',
   'Your designer will share selections here.':'Votre designer partagera les sélections ici.','No project yet':'Aucun projet pour l’instant',
