@@ -208,6 +208,10 @@ tr:hover .row-actions{opacity:1}
 .cp-tab.active{background:var(--olive);color:#fff;border-color:var(--olive)}
 .cp-tab .cnt{opacity:.7;margin-left:5px;font-size:11.5px}
 .cp-prop-list{display:flex;flex-direction:column;gap:12px}
+.cp-floor .cp-room{margin:0 0 18px}
+.cp-floor .cp-room-head{display:flex;justify-content:space-between;align-items:baseline;padding:14px 2px 10px}
+.cp-floor .cp-room-head h2{font-family:'Cormorant Garamond',serif;font-size:20px}
+.cp-floor .cp-room-head .rt{color:var(--muted);font-size:13px}
 .cp-prop{display:flex;align-items:center;gap:16px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:13px 16px;box-shadow:var(--shadow);transition:box-shadow .12s}
 .cp-prop:hover{box-shadow:0 4px 10px rgba(34,31,26,.09)}
 .cp-prop-thumb{width:72px;height:72px;border-radius:10px;overflow:hidden;flex-shrink:0;background:#EFE9DC;display:flex;align-items:center;justify-content:center}
@@ -1060,7 +1064,7 @@ function cpPropCard(i){
   const actions = !portalCanApprove ? '' : (st==='Sent'
     ? `<button class="btn-approve" onclick="portalDecide('${i.id}','Approved')">✓ Approve</button><button class="btn-decline" onclick="portalDecide('${i.id}','Declined')">Decline</button>`
     : (st==='Declined'? `<button class="btn-approve" onclick="portalDecide('${i.id}','Approved')">✓ Approve</button>`:''));
-  const meta=[i._floor,i._room,'Qty '+i.qty].concat(i.brand?[i.brand]:[]).concat(i.supplier?[i.supplier]:[]).concat(i.lead?[i.lead]:[]).join(' · ');
+  const meta=['Qty '+i.qty].concat(i.brand?[i.brand]:[]).concat(i.supplier?[i.supplier]:[]).concat(i.lead?[i.lead]:[]).join(' · ');
   const priceBlock=(i.price!=null)?`<div class="cp-prop-price"><div class="cp-prop-amount">${fmt(i.price)}</div><div class="cp-prop-lbl">Proposed</div></div>`:'';
   return `<div class="cp-prop">
     <div class="cp-prop-thumb">${thumb}</div>
@@ -1092,17 +1096,32 @@ function renderPortalRemote(){
   const pending=all.filter(i=>i.status==='Sent');
   const counts={all:all.length, Sent:pending.length, Approved:approved.length, Declined:all.filter(i=>i.status==='Declined').length};
   $('cpStats').innerHTML='';
-  const visuals=[]; d.floors.forEach(f=>{ (f.plans||[]).forEach(pl=>visuals.push(pl)); f.rooms.forEach(r=>(r.renders||[]).forEach(h=>visuals.push(h))); });
   const tab=(k,l)=>`<button class="cp-tab ${portalFilter===k?'active':''}" onclick="setPortalFilter('${k}')">${l}<span class="cnt">${k==='all'?counts.all:(counts[k]||0)}</span></button>`;
-  const filtered = all.filter(i=> portalFilter==='all' ? true : i.status===portalFilter);
+  const match=i=> portalFilter==='all' ? true : i.status===portalFilter;
   let html=`<div class="cp-summary">
       <div><span class="s-ic">✓</span><div><div class="s-num">${pricingOn?fmt(totalAppr):'—'}</div><div class="s-lbl">Total approved</div></div></div>
       <div><span class="s-ic">▤</span><div><div class="s-num">${pricingOn?fmt(totalProp):'—'}</div><div class="s-lbl">Total proposed</div></div></div>
       <div><span class="s-ic">◷</span><div><div class="s-num">${pending.length}</div><div class="s-lbl">Awaiting approval</div></div></div>
     </div>`;
-  if(visuals.length) html+=`<div class="cp-heroes" style="margin-bottom:16px">${visuals.map(v=>`<div class="hero-card" onclick="viewImage('${v.src}','')"><img src="${v.src}"><div class="hero-cap">${v.note||''}</div></div>`).join('')}</div>`;
   html+=`<div class="cp-tabs">${tab('all','All')}${tab('Sent','To approve')}${tab('Approved','Approved')}${tab('Declined','Declined')}</div>`;
-  html+= filtered.length ? `<div class="cp-prop-list">${filtered.map(cpPropCard).join('')}</div>` : `<div class="empty card"><div class="big">Nothing here</div></div>`;
+  let body='';
+  d.floors.forEach(f=>{
+    const plans=f.plans||[];
+    const roomsHtml=(f.rooms||[]).map(r=>{
+      const items=(r.items||[]).filter(match);
+      const renders=r.renders||[];
+      if(!items.length && !(portalFilter==='all' && renders.length)) return '';
+      const rt=items.reduce((a,i)=>a+(i.price||0),0);
+      return `<div class="cp-room"><div class="cp-room-head"><h2>${r.name}</h2><div class="rt">${items.length} selections${(pricingOn&&items.length)?` · <b style="color:var(--ink)">${fmt(rt)}</b>`:''}</div></div>
+        ${renders.length?`<div class="cp-heroes">${renders.map(h=>`<div class="hero-card" onclick="viewImage('${h.src}','')"><img src="${h.src}"><div class="hero-cap">${h.note||''}</div></div>`).join('')}</div>`:''}
+        ${items.length?`<div class="cp-prop-list">${items.map(cpPropCard).join('')}</div>`:''}</div>`;
+    }).join('');
+    if(!roomsHtml.trim() && !(portalFilter==='all' && plans.length)) return;
+    body+=`<div class="cp-floor"><div class="cp-floor-title">${f.name}</div>
+      ${plans.length?`<div class="cp-plans">${plans.map(pl=>`<div class="plan-card" onclick="viewImage('${pl.src}','')"><img src="${pl.src}"><div class="bi-note">${pl.note||''}</div></div>`).join('')}</div>`:''}
+      ${roomsHtml}</div>`;
+  });
+  html+= body || `<div class="empty card"><div class="big">Nothing here</div></div>`;
   $('cpRooms').innerHTML=html;
   if(LANG==='fr') applyLang();
 }
